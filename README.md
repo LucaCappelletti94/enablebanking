@@ -6,7 +6,7 @@
 [![docs.rs](https://docs.rs/enablebanking/badge.svg)](https://docs.rs/enablebanking)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucaCappelletti94/enablebanking/blob/main/LICENSE)
 
-Async client for the [Enable Banking API](https://enablebanking.com/docs/api/reference/), which reads accounts and starts payments at about 2,500 European banks through PSD2. Every endpoint and type is generated from Enable Banking's own OpenAPI description, and a weekly job regenerates the client when that description changes. Requests are signed with your application's RSA key. Not affiliated with Enable Banking.
+Async Rust client for the [Enable Banking API](https://enablebanking.com/docs/api/reference/), generated from its OpenAPI description. Unofficial.
 
 ```rust
 use enablebanking::types::{Access, Aspsp, AuthorizeSessionRequest, StartAuthorizationRequest};
@@ -67,8 +67,6 @@ async fn transactions(client: &Client, code: &str) -> Result<(), Box<dyn std::er
 }
 ```
 
-The method names follow the API: `start_authorization`, `authorize_session`, `get_session`, `get_account_balances`, `get_account_transactions`, `create_payment`, `get_aspsps` and so on. Optional parameters are builder methods, and documented error responses come back as `Error::ErrorResponse` holding the typed body. Amounts are `rust_decimal::Decimal` and dates are `jiff` types.
+Every endpoint is a method named after the API, with optional parameters as builder calls. Amounts are `rust_decimal::Decimal` and dates are `jiff` types.
 
-## Keeping up with the API
-
-`spec/enablebanking-api.yaml` is a verbatim copy of the published description, and `src/generated.rs` is produced from it by `cargo run -p codegen`. Continuous integration fails when the generated file is stale. A weekly workflow downloads the published description and, when it changed, opens a pull request with the regenerated client. A new endpoint stops generation until it is given a method name in `codegen`, so names stay readable. Optional properties are generated as nullable, because the API sends `null` for unset ones although the description does not declare it. A weekly job also reads a Mock ASPSP account through the real sandbox API.
+A weekly job regenerates the client when Enable Banking updates the description, and another calls every endpoint against their sandbox. Optional fields are nullable, because the API sends `null` for them.

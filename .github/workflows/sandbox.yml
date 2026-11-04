@@ -20,10 +20,9 @@ jobs:
         with:
           persist-credentials: false
       - run: rustup toolchain install stable --profile minimal && rustup default stable
-      # Reads the Mock ASPSP accounts of a session approved once in the browser. When the session expires, renew it with the `link` and `session` commands of the example and update the secret.
-      - name: Read the sandbox through the real API
+      # Approves Nordea FI sandbox consents in the runner's headless Chrome.
+      - name: Call every endpoint against the sandbox
         env:
           ENABLEBANKING_SANDBOX_APP: ${{ secrets.ENABLEBANKING_SANDBOX_APP }}
           ENABLEBANKING_SANDBOX_KEY: ${{ secrets.ENABLEBANKING_SANDBOX_KEY }}
-          ENABLEBANKING_SANDBOX_SESSION: ${{ secrets.ENABLEBANKING_SANDBOX_SESSION }}
         run: cargo run --locked --example sandbox
