@@ -189,6 +189,27 @@ async fn all_transactions_follows_continuation_keys() {
 }
 
 #[tokio::test(flavor = "current_thread")]
+async fn an_empty_continuation_key_ends_the_listing() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path(format!("/accounts/{ACCOUNT}/transactions")))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "transactions": [transaction("t1", "1.00", "CRDT")],
+            "continuation_key": "",
+        })))
+        .up_to_n_times(1)
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let found = client(&server)
+        .all_transactions(ACCOUNT, None, None)
+        .await
+        .unwrap();
+    assert_eq!(found.len(), 1);
+}
+
+#[tokio::test(flavor = "current_thread")]
 async fn documented_errors_come_back_typed() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))

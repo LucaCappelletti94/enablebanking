@@ -360,4 +360,13 @@ mod tests {
             "get_account_transactions"
         );
     }
+
+    #[test]
+    fn descriptions_other_than_openapi_3_are_refused() {
+        for version in [json!("2.0"), json!("4.0.0"), json!(null)] {
+            let mut spec = json!({"openapi": version, "paths": {}});
+            let error = lower(&mut spec).unwrap_err();
+            assert!(error.contains("unsupported OpenAPI version"), "{error}");
+        }
+    }
 }
