@@ -14,14 +14,14 @@ pub mod types {
 bank: some banks allow users to choose list of accessible accounts through their
 access consent UI, while other may provide access to all accounts or just access to
 the list of accounts.*/
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub accounts: ::std::vec::Vec<AccountIdentification>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub accounts: ::std::option::Option<::std::vec::Vec<AccountIdentification>>,
         ///Request consent with balances access
-        #[serde(default = "defaults::default_bool::<true>")]
-        pub balances: bool,
+        #[serde(default = "defaults::access_balances")]
+        pub balances: ::std::option::Option<bool>,
         ///Request consent with transactions access
-        #[serde(default = "defaults::default_bool::<true>")]
-        pub transactions: bool,
+        #[serde(default = "defaults::access_transactions")]
+        pub transactions: ::std::option::Option<bool>,
         /**This parameter specifies the date and time until which the authorised session
 remains valid. The value must be in the RFC3339 date-time format with a timezone
 offset, e.g. `2025-12-01T12:00:00.000000+00:00`. The provided value cannot exceed
@@ -46,6 +46,7 @@ ASPSP's side, the session will expire based on the initially provided value.*/
         ///International Bank Account Number (IBAN) - identification used internationally by financial institutions to uniquely identify the account of a customer. Further specifications of the format and content of the IBAN can be found in the standard ISO 13616 "Banking and related financial services - International Bank Account Number (IBAN)" version 1997-10-01, or later revisions.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub iban: ::std::option::Option<::std::string::String>,
+        ///Other identification if iban is not provided
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub other: ::std::option::Option<GenericIdentification>,
     }
@@ -57,14 +58,19 @@ ASPSP's side, the session will expire based on the initially provided value.*/
     ///`AccountResource`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct AccountResource {
+        ///Primary account identifier
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub account_id: ::std::option::Option<AccountIdentification>,
+        ///Information about the financial institution servicing the account
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub account_servicer: ::std::option::Option<FinancialInstitutionIdentification>,
         ///All account identifiers provided by ASPSPs (including primary identifier available in the accountId field)
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub all_account_ids: ::std::vec::Vec<GenericIdentification>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub all_account_ids: ::std::option::Option<
+            ::std::vec::Vec<GenericIdentification>,
+        >,
         pub cash_account_type: CashAccountType,
+        ///Specifies the maximum credit or overdraft allowed on the account
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub credit_limit: ::std::option::Option<crate::Amount>,
         ///Specifies the currency of the account
@@ -85,6 +91,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///Account holder(s) name
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub name: ::std::option::Option<::std::string::String>,
+        ///Postal address of the account holder
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub postal_address: ::std::option::Option<PostalAddress>,
         ///Product Name of the Bank for this account, proprietary definition
@@ -96,6 +103,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///Unique account identificator used for fetching account balances and transactions. It is valid only until the session to which the account belongs is in the AUTHORIZED status. It can be not set in case it is know that it is not possible to fetch balances and transactions for the account (for example, in case the account is blocked or closed at the ASPSP side).
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub uid: ::std::option::Option<::uuid::Uuid>,
+        ///Specifies the usage of the account
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub usage: ::std::option::Option<Usage>,
     }
@@ -201,6 +209,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub bic: ::std::option::Option<::std::string::String>,
         ///Two-letter ISO 3166 code of the country, in which ASPSP operates
         pub country: ::std::string::String,
+        ///Group, which the ASPSP belongs to
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub group: ::std::option::Option<AspspGroup>,
         ///ASPSP logo URL. It is possible to transform (e.g. resize) the logo by adding special suffixes at the end of the URL. For example, `-/resize/500x/`. For full list of possible transformations, please refer to https://uploadcare.com/docs/transformations/image/
@@ -210,13 +219,16 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///Name of the ASPSP (i.e. a bank or a similar financial institution)
         pub name: ::std::string::String,
         ///Supported payment types by country and their properties
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub payments: ::std::vec::Vec<ResponsePaymentType>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub payments: ::std::option::Option<::std::vec::Vec<ResponsePaymentType>>,
         ///List of PSU types supported by ASPSP
         pub psu_types: ::std::vec::Vec<PsuType>,
         ///List of the headers required to indicate to data retrieval endpoints that PSU is online. Either all required PSU headers or none of PSU headers are to be provided, otherwise PSU_HEADER_NOT_PROVIDED error will be returned.
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub required_psu_headers: ::std::vec::Vec<::std::string::String>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub required_psu_headers: ::std::option::Option<
+            ::std::vec::Vec<::std::string::String>,
+        >,
+        ///Applicable only to sandbox environment. Additional information necessary to use sandbox environment.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub sandbox: ::std::option::Option<SandboxInfo>,
     }
@@ -243,8 +255,8 @@ null (or the field is not set) if it is not possible to determine whether the ac
     pub struct AuthMethod {
         pub approach: AuthenticationApproach,
         ///List of credentials which are possible to supply while initiating authorization
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub credentials: ::std::vec::Vec<Credential>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub credentials: ::std::option::Option<::std::vec::Vec<Credential>>,
         ///Flag showing whether the current authentication method is hidden from the user. If `true` then the user will not be able to select this authentication method. It is only possible to select this authentication method via API.
         pub hidden_method: bool,
         ///Internal name of the authentication method
@@ -484,9 +496,11 @@ null (or the field is not set) if it is not possible to determine whether the ac
     ///`Beneficiary`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Beneficiary {
+        ///Identification of the party receiving funds
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor: ::std::option::Option<PartyIdentification>,
         pub creditor_account: GenericIdentification,
+        ///Identification of the financial institution where the account receiving funds is held
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
         ///ISO 4217 currency code, in which the account receiving funds is held
@@ -905,11 +919,13 @@ null (or the field is not set) if it is not possible to determine whether the ac
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub auth_method: ::std::option::Option<::std::string::String>,
         ///PSU credentials (e.g., user and/or company ID). If not provided through the API, they will be requested from the PSU during authorization. Credentials can be supplied only if `auth_method` is specified; otherwise, a `WRONG_REQUEST_PARAMETERS` error will be returned.
-        #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
-        pub credentials: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub credentials: ::std::option::Option<
+            ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+        >,
         ///Controls whether the payment submission for execution is deferred after PSU authorization. When set to true, the payment will not be automatically submitted for execution after PSU completes authorization at the ASPSP. Instead, an explicit call to POST /payments/{payment_id}/submit is required to submit the payment for execution. Only effective when the selected ASPSP payment type has deferred_submission_supported: true. Defaults to false.
-        #[serde(default)]
-        pub defer_submission: bool,
+        #[serde(default = "defaults::create_payment_request_defer_submission")]
+        pub defer_submission: ::std::option::Option<bool>,
         ///Preferred PSU language. Two-letter lowercase language code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub language: ::std::option::Option<Language>,
@@ -1030,26 +1046,33 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub beneficiary: Beneficiary,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub end_date: ::std::option::Option<EndDate>,
+        ///Execution date shifting rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub execution_rule: ::std::option::Option<ExecutionRule>,
+        ///Frequency rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub frequency: ::std::option::Option<FrequencyCode>,
         pub instructed_amount: crate::Amount,
+        ///Set of elements used to reference a payment instruction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_id: ::std::option::Option<PaymentIdentification>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number: ::std::option::Option<ReferenceNumber>,
         ///List of needed regulatory reporting codes for international payments
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub regulatory_reporting: ::std::vec::Vec<RegulatoryReporting>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub regulatory_reporting: ::std::option::Option<
+            ::std::vec::Vec<RegulatoryReporting>,
+        >,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub remittance_information: ::std::option::Option<
             UnstructuredRemittanceInformation,
         >,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub requested_execution_date: ::std::option::Option<RequestedExecutionDate>,
+        ///Identifies the final party receiving the funds in the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub ultimate_creditor: ::std::option::Option<PartyIdentification>,
+        ///Identifies the original party from whom the funds originate in the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub ultimate_debtor: ::std::option::Option<PartyIdentification>,
     }
@@ -1064,18 +1087,23 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub beneficiary: Beneficiary,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub end_date: ::std::option::Option<EndDate>,
+        ///Execution date shifting rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub execution_rule: ::std::option::Option<ExecutionRule>,
+        ///Frequency rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub frequency: ::std::option::Option<FrequencyCode>,
         pub instructed_amount: crate::Amount,
+        ///Set of elements used to reference a payment instruction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_id: ::std::option::Option<PaymentIdentification>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number: ::std::option::Option<ReferenceNumber>,
         ///List of needed regulatory reporting codes for international payments
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub regulatory_reporting: ::std::vec::Vec<RegulatoryReporting>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub regulatory_reporting: ::std::option::Option<
+            ::std::vec::Vec<RegulatoryReporting>,
+        >,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub remittance_information: ::std::option::Option<
             UnstructuredRemittanceInformation,
@@ -1085,10 +1113,13 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///Unique identifier of the payment transaction, which can be used for fetching details through the get payment transaction endpoint
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub transaction_id: ::std::option::Option<::std::string::String>,
+        ///Status of the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub transaction_status: ::std::option::Option<PaymentStatus>,
+        ///Identifies the final party receiving the funds in the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub ultimate_creditor: ::std::option::Option<PartyIdentification>,
+        ///Identifies the original party from whom the funds originate in the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub ultimate_debtor: ::std::option::Option<PartyIdentification>,
     }
@@ -1486,6 +1517,7 @@ If not given, the standing order is considered as endless.
         ///Detailed explanation of an error
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub detail: ::std::option::Option<::serde_json::Value>,
+        ///Text error code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub error: ::std::option::Option<ErrorCode>,
         ///Error message
@@ -1505,10 +1537,13 @@ If not given, the standing order is considered as endless.
         ///The factor used for conversion of an amount from one currency to another. This reflects the price at which one currency was bought with another currency.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub exchange_rate: ::std::option::Option<::std::string::String>,
+        ///Original amount, in which transaction was initiated. In particular, for cross-currency card transactions, the value represents original value of a purchase or a withdrawal in a currency different from the card's native or default currency.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub instructed_amount: ::std::option::Option<crate::Amount>,
+        ///Specifies the type of exchange rate applied to the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub rate_type: ::std::option::Option<RateType>,
+        ///ISO 4217 code of the currency, in which the rate of exchange is expressed in a currency exchange. In the example 1GBP = xxxCUR, the unit currency is GBP.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub unit_currency: ::std::option::Option<CurrencyCode>,
     }
@@ -1578,6 +1613,7 @@ If not given, the standing order is considered as endless.
         ///Code allocated to a financial institution by the ISO 9362 Registration Authority as described in ISO 9362 "Banking - Banking telecommunication messages - Business identification code (BIC)".
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub bic_fi: ::std::option::Option<::std::string::String>,
+        ///Information used to identify a member within a clearing system.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub clearing_system_member_id: ::std::option::Option<
             ClearingSystemMemberIdentification,
@@ -1734,6 +1770,7 @@ If not given, the standing order is considered as endless.
         ///Hashed unique identification of a PSU used by the client application. In case PSU ID is not passed by the client application, the hash is calculated based on a random value. The hash also inherits the application ID, so different hashes will be calculated when using the same PSU ID with different applications.
         pub psu_id_hash: ::std::string::String,
         pub status: PaymentStatus,
+        ///Details explaining the payment status, provided when the cause can be determined unambiguously, mainly for rejected payments
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status_reason_information: ::std::option::Option<StatusReasonInformation>,
     }
@@ -1922,15 +1959,19 @@ If not given, the standing order is considered as endless.
     ///`PartyIdentification`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct PartyIdentification {
+        ///Specifies the contact details associated with a person or an organisation
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub contact_details: ::std::option::Option<ContactDetails>,
         ///Name by which a party is known and which is usually used to identify that party.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub name: ::std::option::Option<::std::string::String>,
+        ///Unique identification of an account, a person or an organisation, as assigned by an issuer
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub organisation_id: ::std::option::Option<GenericIdentification>,
+        ///Information that locates and identifies a specific address, as defined by postal services
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub postal_address: ::std::option::Option<PostalAddress>,
+        ///Unique identification of an account, a person or an organisation, as assigned by an issuer
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub private_id: ::std::option::Option<GenericIdentification>,
     }
@@ -2005,23 +2046,30 @@ API: Unique identification shared between the PISP and the ASPSP
     ///`PaymentRequestResource`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PaymentRequestResource {
+        ///Specifies which party/parties will bear the charges associated with the processing of the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub charge_bearer: ::std::option::Option<ChargeBearerCode>,
         ///Payment instructions to be executed towards one or multiple beneficiaries in the payment process. Maximum number of transactions depend on the ASPSP and type of the payment taking into accounts its specificities about payment request handling.
         pub credit_transfer_transaction: ::std::vec::Vec<CreditTransferTransaction>,
+        ///Identification of the party sending funds
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor: ::std::option::Option<PartyIdentification>,
+        ///Identification of the account from which funds are sent when the payment is executed. When the debtor account is not provided it is to be chosen by the PSU during payment authorisation flow.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_account: ::std::option::Option<GenericIdentification>,
+        ///Identification of the financial institution where the debtor account is held. To be provided only in case the financial institution can not be unambiguously identified the ASPSP name towards which the payment is initiated.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
         ///ISO 4217 code, in which debtor account is held
         #[serde(default = "defaults::payment_request_resource_debtor_currency")]
-        pub debtor_currency: ::std::string::String,
+        pub debtor_currency: ::std::option::Option<::std::string::String>,
+        ///Reference assigned by a sending party to unambiguously identify the payment information block within the message
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_information_id: ::std::option::Option<PaymentInformationId>,
+        ///Set of elements used to further specify the type of payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_type_information: ::std::option::Option<PaymentTypeInformation>,
+        ///Underlying reason for the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub purpose: ::std::option::Option<PurposeCode>,
     }
@@ -2033,25 +2081,32 @@ API: Unique identification shared between the PISP and the ASPSP
     ///`PaymentRequestResourceDetails`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PaymentRequestResourceDetails {
+        ///Specifies which party/parties will bear the charges associated with the processing of the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub charge_bearer: ::std::option::Option<ChargeBearerCode>,
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub credit_transfer_transaction: ::std::vec::Vec<
-            CreditTransferTransactionDetails,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub credit_transfer_transaction: ::std::option::Option<
+            ::std::vec::Vec<CreditTransferTransactionDetails>,
         >,
+        ///Identification of the party sending funds
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor: ::std::option::Option<PartyIdentification>,
+        ///Identification of the account from which funds are sent when the payment is executed. When the debtor account is not provided it is to be chosen by the PSU during payment authorisation flow.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_account: ::std::option::Option<GenericIdentification>,
+        ///Identification of the financial institution where the debtor account is held. To be provided only in case the financial institution can not be unambiguously identified the ASPSP name towards which the payment is initiated.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
         ///ISO 4217 code, in which debtor account is held
         #[serde(default = "defaults::payment_request_resource_details_debtor_currency")]
-        pub debtor_currency: ::std::string::String,
+        pub debtor_currency: ::std::option::Option<::std::string::String>,
+        ///Reference assigned by a sending party to unambiguously identify the payment information block within the message
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_information_id: ::std::option::Option<PaymentInformationId>,
+        ///Set of elements used to further specify the type of payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payment_type_information: ::std::option::Option<PaymentTypeInformation>,
+        ///Underlying reason for the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub purpose: ::std::option::Option<PurposeCode>,
     }
@@ -2298,13 +2353,16 @@ API: Unique identification shared between the PISP and the ASPSP
     ///`PaymentTypeInformation`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct PaymentTypeInformation {
+        ///Specifies the high level purpose of the instruction based on a set of pre-defined categories. This is used by the initiating party to provide information concerning the processing of the payment. It is likely to trigger special processing by any of the agents involved in the payment chain.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub category_purpose: ::std::option::Option<CategoryPurposeCode>,
+        ///Indicator of the urgency or order of importance that the instructing party would like the instructed party to apply
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub instruction_priority: ::std::option::Option<PriorityCode>,
         ///User community specific instrument
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub local_instrument: ::std::option::Option<::std::string::String>,
+        ///Agreement under which or rules under which the transaction should be processed. Specifies a pre-agreed service or level of service between the parties, as published in an external service level code list
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub service_level: ::std::option::Option<ServiceLevelCode>,
     }
@@ -2317,8 +2375,9 @@ API: Unique identification shared between the PISP and the ASPSP
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct PostalAddress {
         ///Unstructured address. The two lines must embed zip code and town name
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub address_line: ::std::vec::Vec<::std::string::String>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub address_line: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+        ///Available address type values
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub address_type: ::std::option::Option<AddressType>,
         ///Number that identifies the position of a building on a street.
@@ -2891,6 +2950,7 @@ added to a postal address to assist the sorting of mail.*/
     ///`RegulatoryReporting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct RegulatoryReporting {
+        ///Regulatory authority to which reporting shall be made
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub authority: ::std::option::Option<RegulatoryAuthority>,
         pub details: RegulatoryReportingDetails,
@@ -2916,6 +2976,7 @@ added to a postal address to assist the sorting of mail.*/
     ///`RegulatoryReportingDetails`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct RegulatoryReportingDetails {
+        ///Amount of money to be reported. If not provided the total instructed amount of the transaction is assumed.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub amount: ::std::option::Option<crate::Amount>,
         ///A code specifying the nature, purpose, and/or reason for the transaction. Codes to be used depend on the regulatory authority, to which they are being reported.
@@ -3002,88 +3063,122 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ResponsePaymentType {
         ///List of supported auth methods for this payment type
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub allowed_auth_methods: ::std::vec::Vec<::std::string::String>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub allowed_auth_methods: ::std::option::Option<
+            ::std::vec::Vec<::std::string::String>,
+        >,
         ///List of supported charge bearer codes
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub charge_bearer_values: ::std::vec::Vec<ChargeBearerCode>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub charge_bearer_values: ::std::option::Option<
+            ::std::vec::Vec<ChargeBearerCode>,
+        >,
         ///List of supported creditor account schemas
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub creditor_account_schemas: ::std::vec::Vec<SchemeName>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub creditor_account_schemas: ::std::option::Option<::std::vec::Vec<SchemeName>>,
         ///States if creditor agent bicFi is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.bic_fi`
-        #[serde(default)]
-        pub creditor_agent_bic_fi_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_creditor_agent_bic_fi_required"
+        )]
+        pub creditor_agent_bic_fi_required: ::std::option::Option<bool>,
         ///States if creditor agent clearing system member ID is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.clearing_system_member_id`
-        #[serde(default)]
-        pub creditor_agent_clearing_system_member_id_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_creditor_agent_clearing_system_member_id_required"
+        )]
+        pub creditor_agent_clearing_system_member_id_required: ::std::option::Option<
+            bool,
+        >,
         ///States if creditor country is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country`
-        #[serde(default)]
-        pub creditor_country_required: bool,
+        #[serde(default = "defaults::response_payment_type_creditor_country_required")]
+        pub creditor_country_required: ::std::option::Option<bool>,
         ///States if creditor name is required.  Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country`
-        #[serde(default)]
-        pub creditor_name_required: bool,
+        #[serde(default = "defaults::response_payment_type_creditor_name_required")]
+        pub creditor_name_required: ::std::option::Option<bool>,
         ///States if creditor postal address is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address`
-        #[serde(default)]
-        pub creditor_postal_address_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_creditor_postal_address_required"
+        )]
+        pub creditor_postal_address_required: ::std::option::Option<bool>,
         ///List of supported currencies
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub currencies: ::std::vec::Vec<::std::string::String>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub currencies: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
         ///States if debtor account is required for payment initiation request. When the debtor account is not provided it is to be chosen by the PSU during payment authorisation flow. Create payment body field: `payment_request.debtor_account`
-        #[serde(default)]
-        pub debtor_account_required: bool,
+        #[serde(default = "defaults::response_payment_type_debtor_account_required")]
+        pub debtor_account_required: ::std::option::Option<bool>,
         ///List of supported debtor account schemas
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub debtor_account_schemas: ::std::vec::Vec<SchemeName>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub debtor_account_schemas: ::std::option::Option<::std::vec::Vec<SchemeName>>,
         ///States if debtor's contact email is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.email_address`
-        #[serde(default)]
-        pub debtor_contact_email_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_debtor_contact_email_required"
+        )]
+        pub debtor_contact_email_required: ::std::option::Option<bool>,
         ///States if debtor's contact phone is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.phone_number`
-        #[serde(default)]
-        pub debtor_contact_phone_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_debtor_contact_phone_required"
+        )]
+        pub debtor_contact_phone_required: ::std::option::Option<bool>,
         ///States if debtor currency is required. Create payment body field: `payment_request.debtor_currency`
-        #[serde(default)]
-        pub debtor_currency_required: bool,
+        #[serde(default = "defaults::response_payment_type_debtor_currency_required")]
+        pub debtor_currency_required: ::std::option::Option<bool>,
         ///Indicates whether this payment type supports deferred submission for execution. When true, the automatic submission of the payment for execution after PSU authorization can be deferred — the client must call POST /payments/{payment_id}/submit to explicitly submit the payment for execution.
-        #[serde(default)]
-        pub deferred_submission_supported: bool,
+        #[serde(
+            default = "defaults::response_payment_type_deferred_submission_supported"
+        )]
+        pub deferred_submission_supported: ::std::option::Option<bool>,
         ///List of the final successful statuses for the payment type. Please note that when a payment reaches one of the statuses provided in this list, it is not yet guaranteed that the funds will be credited to the creditor's account specified in the payment request. It is up to the application that created the payment to conclude whether the funds are (or will be) received, depending on the actual payment status and other factors.
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub final_successful_statuses: ::std::vec::Vec<PaymentStatus>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub final_successful_statuses: ::std::option::Option<
+            ::std::vec::Vec<PaymentStatus>,
+        >,
         ///Maximum number of transactions per payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub max_transactions: ::std::option::Option<i64>,
         pub payment_type: PaymentType,
         ///List of supported priority codes
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub priority_codes: ::std::vec::Vec<PriorityCode>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub priority_codes: ::std::option::Option<::std::vec::Vec<PriorityCode>>,
         pub psu_type: PsuType,
         ///List of reference number schemas supported by a payment method
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub reference_number_schemas: ::std::vec::Vec<ReferenceNumberScheme>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub reference_number_schemas: ::std::option::Option<
+            ::std::vec::Vec<ReferenceNumberScheme>,
+        >,
         ///States if reference number can be provided for credit transfer transactions
-        #[serde(default)]
-        pub reference_number_supported: bool,
+        #[serde(default = "defaults::response_payment_type_reference_number_supported")]
+        pub reference_number_supported: ::std::option::Option<bool>,
         ///States if regulatory reporting shall be provided for credit transfer transactions. Create payment body field: `payment_request.credit_transfer_transaction[*].regulatory_reporting.details.code`
-        #[serde(default)]
-        pub regulatory_reporting_code_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_regulatory_reporting_code_required"
+        )]
+        pub regulatory_reporting_code_required: ::std::option::Option<bool>,
         ///List of supported codes for regulatory reporting details
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub regulatory_reporting_codes: ::std::vec::Vec<RegulatoryReportingCode>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub regulatory_reporting_codes: ::std::option::Option<
+            ::std::vec::Vec<RegulatoryReportingCode>,
+        >,
         ///Properties of remittance information. Each item of the array correspond to the remittance information line with the same index. When provided, the number of lines in the remittance information should be the same as the length of this array.
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub remittance_information_lines: ::std::vec::Vec<RemittanceInformationLineInfo>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub remittance_information_lines: ::std::option::Option<
+            ::std::vec::Vec<RemittanceInformationLineInfo>,
+        >,
         ///States if remittance information is required. Create payment body field: `payment_request.credit_transfer_transaction[*].remittance_information`
-        #[serde(default)]
-        pub remittance_information_required: bool,
+        #[serde(
+            default = "defaults::response_payment_type_remittance_information_required"
+        )]
+        pub remittance_information_required: ::std::option::Option<bool>,
         ///States if both reference number and remittance information can be provided simultaneously
-        #[serde(default)]
-        pub remittance_reference_supported: bool,
+        #[serde(
+            default = "defaults::response_payment_type_remittance_reference_supported"
+        )]
+        pub remittance_reference_supported: ::std::option::Option<bool>,
         ///Maximum requested execution date interval in the future
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub requested_execution_date_max_period: ::std::option::Option<i64>,
         ///States if requested execution date supported by a payment method
-        #[serde(default)]
-        pub requested_execution_date_supported: bool,
+        #[serde(
+            default = "defaults::response_payment_type_requested_execution_date_supported"
+        )]
+        pub requested_execution_date_supported: ::std::option::Option<bool>,
     }
     impl ResponsePaymentType {
         pub fn builder() -> builder::ResponsePaymentType {
@@ -3094,8 +3189,8 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct SandboxInfo {
         ///List of sandbox users which can be used to test sandbox environment
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub users: ::std::vec::Vec<SandboxUser>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub users: ::std::option::Option<::std::vec::Vec<SandboxUser>>,
     }
     impl SandboxInfo {
         pub fn builder() -> builder::SandboxInfo {
@@ -3520,17 +3615,22 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub auth_method: ::std::option::Option<::std::string::String>,
         ///PSU credentials (e.g., user and/or company ID). If not provided through the API, they will be requested from the PSU during authorization. Credentials can be supplied only if `auth_method` is specified; otherwise, a `WRONG_REQUEST_PARAMETERS` error will be returned.
-        #[serde(default, skip_serializing_if = "::serde_json::Map::is_empty")]
-        pub credentials: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub credentials: ::std::option::Option<
+            ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+        >,
         ///Controls whether user credentials will be autosubmitted (if passed). If set to `false` then credentials form will be prefilled with passed credentials
-        #[serde(default = "defaults::default_bool::<true>")]
-        pub credentials_autosubmit: bool,
+        #[serde(
+            default = "defaults::start_authorization_request_credentials_autosubmit"
+        )]
+        pub credentials_autosubmit: ::std::option::Option<bool>,
         ///Preferred PSU language. Two-letter lowercase language code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub language: ::std::option::Option<Language>,
         ///Unique identification of a PSU used by the client application. It can be used to match sessions of the same user. Although only hashed value is stored, it is recommended to use anonymised identifiers (i.e. digital ID instead of email or social security number). In case the parameter is not passed by the application, random value will be used.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub psu_id: ::std::option::Option<::std::string::String>,
+        ///PSU type used for the authorization flow. This parameter affects how the authorization is performed at the ASPSP (e.g., whether a personal or business login page is shown). A mismatch between the provided psu_type and the PSU's actual account type can result in authorization failures or the inability to see expected accounts. Since the default value depends on the specific connector, it is highly recommended to always provide this value for consistent behavior. If the application cannot determine the PSU type, it should be requested from the end user (PSU).
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub psu_type: ::std::option::Option<PsuType>,
         ///URL that PSU will be redirected to after authorization
@@ -3579,6 +3679,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         ///Payment ID
         pub payment_id: ::uuid::Uuid,
         pub status: PaymentStatus,
+        ///Additional information about the status reason
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status_reason_information: ::std::option::Option<StatusReasonInformation>,
     }
@@ -3592,7 +3693,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     pub struct SuccessResponse {
         ///Returns "OK" in case of successful request
         #[serde(default = "defaults::success_response_message")]
-        pub message: ::std::string::String,
+        pub message: ::std::option::Option<::std::string::String>,
     }
     impl ::std::default::Default for SuccessResponse {
         fn default() -> Self {
@@ -3609,39 +3710,48 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     ///`Transaction`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Transaction {
+        ///Funds on the account after execution of the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub balance_after_transaction: ::std::option::Option<crate::Amount>,
+        ///Allows the account servicer to correctly report a transaction, which in its turn will help account holders to perform their cash management and reconciliation operations.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub bank_transaction_code: ::std::option::Option<BankTransactionCode>,
         ///Booking date of the transaction on the account, i.e. the date at which the transaction has been recorded on books
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub booking_date: ::std::option::Option<::jiff::civil::Date>,
         pub credit_debit_indicator: CreditDebitIndicator,
+        ///Identification of the party receiving funds in the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor: ::std::option::Option<PartyIdentification>,
+        ///Identification of the account on which the transaction is credited
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_account: ::std::option::Option<AccountIdentification>,
         ///All other creditor account identifiers provided by ASPSPs
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub creditor_account_additional_identification: ::std::vec::Vec<
-            GenericIdentification,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub creditor_account_additional_identification: ::std::option::Option<
+            ::std::vec::Vec<GenericIdentification>,
         >,
+        ///Identification of the creditor agent
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
+        ///Identification of the party sending funds in the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor: ::std::option::Option<PartyIdentification>,
+        ///Identification of the account on which the transaction is debited
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_account: ::std::option::Option<AccountIdentification>,
         ///All other debtor account identifiers provided by ASPSPs
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub debtor_account_additional_identification: ::std::vec::Vec<
-            GenericIdentification,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub debtor_account_additional_identification: ::std::option::Option<
+            ::std::vec::Vec<GenericIdentification>,
         >,
+        ///Identification of the debtor agent
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
         ///Unique transaction identifier provided by ASPSP. This identifier is both unique and immutable for accounts with the same identification hashes and can be used for matching transactions across multiple PSU authentication sessions. Usually the same identifier is available for transactions in ASPSP's online/mobile interface and is called archive ID or similarly. Please note that this identifier is not globally unique and same entry references are likely to occur for transactions belonging to different accounts.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub entry_reference: ::std::option::Option<::std::string::String>,
+        ///Provides details on the currency exchange rate and contract.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub exchange_rate: ::std::option::Option<ExchangeRate>,
         ///Category code conform to ISO 18245, related to the type of services or goods the merchant provides for the transaction
@@ -3653,11 +3763,14 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         ///Credit transfer reference number (also known as the creditor reference or the structured creditor reference). The value is set when it is known that the transaction data contains a reference number (in either ISO 11649 or another format). If the format is known it is provided in the reference_number_schema field.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number: ::std::option::Option<::std::string::String>,
+        ///Indicates what kind of reference number is used.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number_schema: ::std::option::Option<ReferenceNumberScheme>,
         ///Payment details. For credit transfers may contain free text, reference number or both at the same time (in case Extended Remittance Information is supported). When it is known that remittance information contains a reference number (either based on ISO 11649 or a local scheme), the reference number is also available via the `reference_number` field.
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub remittance_information: ::std::vec::Vec<::std::string::String>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub remittance_information: ::std::option::Option<
+            ::std::vec::Vec<::std::string::String>,
+        >,
         pub status: TransactionStatus,
         pub transaction_amount: crate::Amount,
         /**Date used for specific purposes:
@@ -4004,19 +4117,25 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct Access {
             accounts: ::std::result::Result<
-                ::std::vec::Vec<super::AccountIdentification>,
+                ::std::option::Option<::std::vec::Vec<super::AccountIdentification>>,
                 ::std::string::String,
             >,
-            balances: ::std::result::Result<bool, ::std::string::String>,
-            transactions: ::std::result::Result<bool, ::std::string::String>,
+            balances: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
+            transactions: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             valid_until: ::std::result::Result<::jiff::Timestamp, ::std::string::String>,
         }
         impl ::std::default::Default for Access {
             fn default() -> Self {
                 Self {
                     accounts: Ok(Default::default()),
-                    balances: Ok(super::defaults::default_bool::<true>()),
-                    transactions: Ok(super::defaults::default_bool::<true>()),
+                    balances: Ok(super::defaults::access_balances()),
+                    transactions: Ok(super::defaults::access_transactions()),
                     valid_until: Err("no value supplied for valid_until".to_string()),
                 }
             }
@@ -4025,7 +4144,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn accounts<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::AccountIdentification>,
+                    ::std::option::Option<::std::vec::Vec<super::AccountIdentification>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -4038,7 +4157,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn balances<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.balances = value
@@ -4050,7 +4169,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn transactions<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.transactions = value
@@ -4175,7 +4294,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             all_account_ids: ::std::result::Result<
-                ::std::vec::Vec<super::GenericIdentification>,
+                ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 ::std::string::String,
             >,
             cash_account_type: ::std::result::Result<
@@ -4293,7 +4412,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn all_account_ids<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::GenericIdentification>,
+                    ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -4596,7 +4715,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             maximum_consent_validity: ::std::result::Result<i64, ::std::string::String>,
             name: ::std::result::Result<::std::string::String, ::std::string::String>,
             payments: ::std::result::Result<
-                ::std::vec::Vec<super::ResponsePaymentType>,
+                ::std::option::Option<::std::vec::Vec<super::ResponsePaymentType>>,
                 ::std::string::String,
             >,
             psu_types: ::std::result::Result<
@@ -4604,7 +4723,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             required_psu_headers: ::std::result::Result<
-                ::std::vec::Vec<::std::string::String>,
+                ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                 ::std::string::String,
             >,
             sandbox: ::std::result::Result<
@@ -4733,7 +4852,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn payments<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ResponsePaymentType>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::ResponsePaymentType>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.payments = value
@@ -4757,7 +4878,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn required_psu_headers<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.required_psu_headers = value
@@ -4886,7 +5009,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             credentials: ::std::result::Result<
-                ::std::vec::Vec<super::Credential>,
+                ::std::option::Option<::std::vec::Vec<super::Credential>>,
                 ::std::string::String,
             >,
             hidden_method: ::std::result::Result<bool, ::std::string::String>,
@@ -4929,7 +5052,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn credentials<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::Credential>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::Credential>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.credentials = value
@@ -5651,10 +5776,15 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             credentials: ::std::result::Result<
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
-            defer_submission: ::std::result::Result<bool, ::std::string::String>,
+            defer_submission: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             language: ::std::result::Result<
                 ::std::option::Option<super::Language>,
                 ::std::string::String,
@@ -5688,7 +5818,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     aspsp: Err("no value supplied for aspsp".to_string()),
                     auth_method: Ok(Default::default()),
                     credentials: Ok(Default::default()),
-                    defer_submission: Ok(Default::default()),
+                    defer_submission: Ok(
+                        super::defaults::create_payment_request_defer_submission(),
+                    ),
                     language: Ok(Default::default()),
                     payment_request: Err(
                         "no value supplied for payment_request".to_string(),
@@ -5730,7 +5862,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn credentials<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -5743,7 +5877,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn defer_submission<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.defer_submission = value
@@ -6132,7 +6266,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             regulatory_reporting: ::std::result::Result<
-                ::std::vec::Vec<super::RegulatoryReporting>,
+                ::std::option::Option<::std::vec::Vec<super::RegulatoryReporting>>,
                 ::std::string::String,
             >,
             remittance_information: ::std::result::Result<
@@ -6269,7 +6403,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn regulatory_reporting<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::RegulatoryReporting>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::RegulatoryReporting>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.regulatory_reporting = value
@@ -6418,7 +6554,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             regulatory_reporting: ::std::result::Result<
-                ::std::vec::Vec<super::RegulatoryReporting>,
+                ::std::option::Option<::std::vec::Vec<super::RegulatoryReporting>>,
                 ::std::string::String,
             >,
             remittance_information: ::std::result::Result<
@@ -6565,7 +6701,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn regulatory_reporting<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::RegulatoryReporting>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::RegulatoryReporting>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.regulatory_reporting = value
@@ -8104,7 +8242,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             debtor_currency: ::std::result::Result<
-                ::std::string::String,
+                ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
             payment_information_id: ::std::result::Result<
@@ -8216,7 +8354,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_currency<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_currency = value
@@ -8315,7 +8453,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             credit_transfer_transaction: ::std::result::Result<
-                ::std::vec::Vec<super::CreditTransferTransactionDetails>,
+                ::std::option::Option<
+                    ::std::vec::Vec<super::CreditTransferTransactionDetails>,
+                >,
                 ::std::string::String,
             >,
             debtor: ::std::result::Result<
@@ -8331,7 +8471,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             debtor_currency: ::std::result::Result<
-                ::std::string::String,
+                ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
             payment_information_id: ::std::result::Result<
@@ -8382,7 +8522,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn credit_transfer_transaction<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::CreditTransferTransactionDetails>,
+                    ::std::option::Option<
+                        ::std::vec::Vec<super::CreditTransferTransactionDetails>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -8441,7 +8583,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_currency<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_currency = value
@@ -8650,7 +8792,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct PostalAddress {
             address_line: ::std::result::Result<
-                ::std::vec::Vec<::std::string::String>,
+                ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                 ::std::string::String,
             >,
             address_type: ::std::result::Result<
@@ -8709,7 +8851,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         impl PostalAddress {
             pub fn address_line<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.address_line = value
@@ -9231,58 +9375,67 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct ResponsePaymentType {
             allowed_auth_methods: ::std::result::Result<
-                ::std::vec::Vec<::std::string::String>,
+                ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                 ::std::string::String,
             >,
             charge_bearer_values: ::std::result::Result<
-                ::std::vec::Vec<super::ChargeBearerCode>,
+                ::std::option::Option<::std::vec::Vec<super::ChargeBearerCode>>,
                 ::std::string::String,
             >,
             creditor_account_schemas: ::std::result::Result<
-                ::std::vec::Vec<super::SchemeName>,
+                ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
                 ::std::string::String,
             >,
             creditor_agent_bic_fi_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             creditor_agent_clearing_system_member_id_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             creditor_country_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
-            creditor_name_required: ::std::result::Result<bool, ::std::string::String>,
+            creditor_name_required: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             creditor_postal_address_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             currencies: ::std::result::Result<
-                ::std::vec::Vec<::std::string::String>,
+                ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                 ::std::string::String,
             >,
-            debtor_account_required: ::std::result::Result<bool, ::std::string::String>,
+            debtor_account_required: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             debtor_account_schemas: ::std::result::Result<
-                ::std::vec::Vec<super::SchemeName>,
+                ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
                 ::std::string::String,
             >,
             debtor_contact_email_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             debtor_contact_phone_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
-            debtor_currency_required: ::std::result::Result<bool, ::std::string::String>,
+            debtor_currency_required: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             deferred_submission_supported: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             final_successful_statuses: ::std::result::Result<
-                ::std::vec::Vec<super::PaymentStatus>,
+                ::std::option::Option<::std::vec::Vec<super::PaymentStatus>>,
                 ::std::string::String,
             >,
             max_transactions: ::std::result::Result<
@@ -9294,36 +9447,38 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             priority_codes: ::std::result::Result<
-                ::std::vec::Vec<super::PriorityCode>,
+                ::std::option::Option<::std::vec::Vec<super::PriorityCode>>,
                 ::std::string::String,
             >,
             psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
             reference_number_schemas: ::std::result::Result<
-                ::std::vec::Vec<super::ReferenceNumberScheme>,
+                ::std::option::Option<::std::vec::Vec<super::ReferenceNumberScheme>>,
                 ::std::string::String,
             >,
             reference_number_supported: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             regulatory_reporting_code_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             regulatory_reporting_codes: ::std::result::Result<
-                ::std::vec::Vec<super::RegulatoryReportingCode>,
+                ::std::option::Option<::std::vec::Vec<super::RegulatoryReportingCode>>,
                 ::std::string::String,
             >,
             remittance_information_lines: ::std::result::Result<
-                ::std::vec::Vec<super::RemittanceInformationLineInfo>,
+                ::std::option::Option<
+                    ::std::vec::Vec<super::RemittanceInformationLineInfo>,
+                >,
                 ::std::string::String,
             >,
             remittance_information_required: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             remittance_reference_supported: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
             requested_execution_date_max_period: ::std::result::Result<
@@ -9331,7 +9486,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             requested_execution_date_supported: ::std::result::Result<
-                bool,
+                ::std::option::Option<bool>,
                 ::std::string::String,
             >,
         }
@@ -9341,41 +9496,71 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     allowed_auth_methods: Ok(Default::default()),
                     charge_bearer_values: Ok(Default::default()),
                     creditor_account_schemas: Ok(Default::default()),
-                    creditor_agent_bic_fi_required: Ok(Default::default()),
-                    creditor_agent_clearing_system_member_id_required: Ok(
-                        Default::default(),
+                    creditor_agent_bic_fi_required: Ok(
+                        super::defaults::response_payment_type_creditor_agent_bic_fi_required(),
                     ),
-                    creditor_country_required: Ok(Default::default()),
-                    creditor_name_required: Ok(Default::default()),
-                    creditor_postal_address_required: Ok(Default::default()),
+                    creditor_agent_clearing_system_member_id_required: Ok(
+                        super::defaults::response_payment_type_creditor_agent_clearing_system_member_id_required(),
+                    ),
+                    creditor_country_required: Ok(
+                        super::defaults::response_payment_type_creditor_country_required(),
+                    ),
+                    creditor_name_required: Ok(
+                        super::defaults::response_payment_type_creditor_name_required(),
+                    ),
+                    creditor_postal_address_required: Ok(
+                        super::defaults::response_payment_type_creditor_postal_address_required(),
+                    ),
                     currencies: Ok(Default::default()),
-                    debtor_account_required: Ok(Default::default()),
+                    debtor_account_required: Ok(
+                        super::defaults::response_payment_type_debtor_account_required(),
+                    ),
                     debtor_account_schemas: Ok(Default::default()),
-                    debtor_contact_email_required: Ok(Default::default()),
-                    debtor_contact_phone_required: Ok(Default::default()),
-                    debtor_currency_required: Ok(Default::default()),
-                    deferred_submission_supported: Ok(Default::default()),
+                    debtor_contact_email_required: Ok(
+                        super::defaults::response_payment_type_debtor_contact_email_required(),
+                    ),
+                    debtor_contact_phone_required: Ok(
+                        super::defaults::response_payment_type_debtor_contact_phone_required(),
+                    ),
+                    debtor_currency_required: Ok(
+                        super::defaults::response_payment_type_debtor_currency_required(),
+                    ),
+                    deferred_submission_supported: Ok(
+                        super::defaults::response_payment_type_deferred_submission_supported(),
+                    ),
                     final_successful_statuses: Ok(Default::default()),
                     max_transactions: Ok(Default::default()),
                     payment_type: Err("no value supplied for payment_type".to_string()),
                     priority_codes: Ok(Default::default()),
                     psu_type: Err("no value supplied for psu_type".to_string()),
                     reference_number_schemas: Ok(Default::default()),
-                    reference_number_supported: Ok(Default::default()),
-                    regulatory_reporting_code_required: Ok(Default::default()),
+                    reference_number_supported: Ok(
+                        super::defaults::response_payment_type_reference_number_supported(),
+                    ),
+                    regulatory_reporting_code_required: Ok(
+                        super::defaults::response_payment_type_regulatory_reporting_code_required(),
+                    ),
                     regulatory_reporting_codes: Ok(Default::default()),
                     remittance_information_lines: Ok(Default::default()),
-                    remittance_information_required: Ok(Default::default()),
-                    remittance_reference_supported: Ok(Default::default()),
+                    remittance_information_required: Ok(
+                        super::defaults::response_payment_type_remittance_information_required(),
+                    ),
+                    remittance_reference_supported: Ok(
+                        super::defaults::response_payment_type_remittance_reference_supported(),
+                    ),
                     requested_execution_date_max_period: Ok(Default::default()),
-                    requested_execution_date_supported: Ok(Default::default()),
+                    requested_execution_date_supported: Ok(
+                        super::defaults::response_payment_type_requested_execution_date_supported(),
+                    ),
                 }
             }
         }
         impl ResponsePaymentType {
             pub fn allowed_auth_methods<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.allowed_auth_methods = value
@@ -9389,7 +9574,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn charge_bearer_values<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ChargeBearerCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::ChargeBearerCode>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.charge_bearer_values = value
@@ -9403,7 +9590,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn creditor_account_schemas<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::SchemeName>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_account_schemas = value
@@ -9417,7 +9606,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn creditor_agent_bic_fi_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_agent_bic_fi_required = value
@@ -9434,7 +9623,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 value: T,
             ) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_agent_clearing_system_member_id_required = value
@@ -9448,7 +9637,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn creditor_country_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_country_required = value
@@ -9462,7 +9651,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn creditor_name_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_name_required = value
@@ -9476,7 +9665,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn creditor_postal_address_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.creditor_postal_address_required = value
@@ -9490,7 +9679,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn currencies<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.currencies = value
@@ -9502,7 +9693,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_account_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_account_required = value
@@ -9516,7 +9707,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_account_schemas<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::SchemeName>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_account_schemas = value
@@ -9530,7 +9723,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_contact_email_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_contact_email_required = value
@@ -9544,7 +9737,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_contact_phone_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_contact_phone_required = value
@@ -9558,7 +9751,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn debtor_currency_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.debtor_currency_required = value
@@ -9572,7 +9765,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn deferred_submission_supported<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.deferred_submission_supported = value
@@ -9586,7 +9779,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn final_successful_statuses<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::PaymentStatus>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::PaymentStatus>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.final_successful_statuses = value
@@ -9626,7 +9821,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn priority_codes<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::PriorityCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::PriorityCode>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.priority_codes = value
@@ -9653,7 +9850,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn reference_number_schemas<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::ReferenceNumberScheme>,
+                    ::std::option::Option<::std::vec::Vec<super::ReferenceNumberScheme>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9668,7 +9865,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn reference_number_supported<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.reference_number_supported = value
@@ -9682,7 +9879,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn regulatory_reporting_code_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.regulatory_reporting_code_required = value
@@ -9697,7 +9894,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn regulatory_reporting_codes<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::RegulatoryReportingCode>,
+                    ::std::option::Option<
+                        ::std::vec::Vec<super::RegulatoryReportingCode>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9713,7 +9912,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn remittance_information_lines<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::RemittanceInformationLineInfo>,
+                    ::std::option::Option<
+                        ::std::vec::Vec<super::RemittanceInformationLineInfo>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9728,7 +9929,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn remittance_information_required<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.remittance_information_required = value
@@ -9742,7 +9943,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn remittance_reference_supported<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.remittance_reference_supported = value
@@ -9770,7 +9971,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn requested_execution_date_supported<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.requested_execution_date_supported = value
@@ -9890,7 +10091,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct SandboxInfo {
             users: ::std::result::Result<
-                ::std::vec::Vec<super::SandboxUser>,
+                ::std::option::Option<::std::vec::Vec<super::SandboxUser>>,
                 ::std::string::String,
             >,
         }
@@ -9904,7 +10105,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         impl SandboxInfo {
             pub fn users<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::SandboxUser>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<super::SandboxUser>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.users = value
@@ -10108,10 +10311,15 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             credentials: ::std::result::Result<
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
-            credentials_autosubmit: ::std::result::Result<bool, ::std::string::String>,
+            credentials_autosubmit: ::std::result::Result<
+                ::std::option::Option<bool>,
+                ::std::string::String,
+            >,
             language: ::std::result::Result<
                 ::std::option::Option<super::Language>,
                 ::std::string::String,
@@ -10137,7 +10345,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     aspsp: Err("no value supplied for aspsp".to_string()),
                     auth_method: Ok(Default::default()),
                     credentials: Ok(Default::default()),
-                    credentials_autosubmit: Ok(super::defaults::default_bool::<true>()),
+                    credentials_autosubmit: Ok(
+                        super::defaults::start_authorization_request_credentials_autosubmit(),
+                    ),
                     language: Ok(Default::default()),
                     psu_id: Ok(Default::default()),
                     psu_type: Ok(Default::default()),
@@ -10186,7 +10396,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn credentials<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -10199,7 +10411,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn credentials_autosubmit<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.credentials_autosubmit = value
@@ -10567,7 +10779,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         }
         #[derive(Clone, Debug)]
         pub struct SuccessResponse {
-            message: ::std::result::Result<::std::string::String, ::std::string::String>,
+            message: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
         impl ::std::default::Default for SuccessResponse {
             fn default() -> Self {
@@ -10579,7 +10794,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         impl SuccessResponse {
             pub fn message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.message = value
@@ -10630,7 +10845,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             creditor_account_additional_identification: ::std::result::Result<
-                ::std::vec::Vec<super::GenericIdentification>,
+                ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 ::std::string::String,
             >,
             creditor_agent: ::std::result::Result<
@@ -10646,7 +10861,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             debtor_account_additional_identification: ::std::result::Result<
-                ::std::vec::Vec<super::GenericIdentification>,
+                ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 ::std::string::String,
             >,
             debtor_agent: ::std::result::Result<
@@ -10678,7 +10893,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             remittance_information: ::std::result::Result<
-                ::std::vec::Vec<::std::string::String>,
+                ::std::option::Option<::std::vec::Vec<::std::string::String>>,
                 ::std::string::String,
             >,
             status: ::std::result::Result<
@@ -10829,7 +11044,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             ) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::GenericIdentification>,
+                    ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -10894,7 +11109,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             ) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::vec::Vec<super::GenericIdentification>,
+                    ::std::option::Option<::std::vec::Vec<super::GenericIdentification>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -11005,7 +11220,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn remittance_information<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.remittance_information = value
@@ -11156,17 +11373,111 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     }
     /// Generation of default values for serde.
     pub mod defaults {
-        pub(super) fn default_bool<const V: bool>() -> bool {
-            V
+        pub(super) fn access_balances() -> ::std::option::Option<bool> {
+            ::std::option::Option::Some(true)
         }
-        pub(super) fn payment_request_resource_debtor_currency() -> ::std::string::String {
-            "XXX".to_string()
+        pub(super) fn access_transactions() -> ::std::option::Option<bool> {
+            ::std::option::Option::Some(true)
         }
-        pub(super) fn payment_request_resource_details_debtor_currency() -> ::std::string::String {
-            "XXX".to_string()
+        pub(super) fn create_payment_request_defer_submission() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
         }
-        pub(super) fn success_response_message() -> ::std::string::String {
-            "OK".to_string()
+        pub(super) fn payment_request_resource_debtor_currency() -> ::std::option::Option<
+            ::std::string::String,
+        > {
+            ::std::option::Option::Some("XXX".to_string())
+        }
+        pub(super) fn payment_request_resource_details_debtor_currency() -> ::std::option::Option<
+            ::std::string::String,
+        > {
+            ::std::option::Option::Some("XXX".to_string())
+        }
+        pub(super) fn response_payment_type_creditor_agent_bic_fi_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_creditor_agent_clearing_system_member_id_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_creditor_country_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_creditor_name_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_creditor_postal_address_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_debtor_account_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_debtor_contact_email_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_debtor_contact_phone_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_debtor_currency_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_deferred_submission_supported() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_reference_number_supported() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_regulatory_reporting_code_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_remittance_information_required() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_remittance_reference_supported() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn response_payment_type_requested_execution_date_supported() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(false)
+        }
+        pub(super) fn start_authorization_request_credentials_autosubmit() -> ::std::option::Option<
+            bool,
+        > {
+            ::std::option::Option::Some(true)
+        }
+        pub(super) fn success_response_message() -> ::std::option::Option<
+            ::std::string::String,
+        > {
+            ::std::option::Option::Some("OK".to_string())
         }
     }
     /// Error types.

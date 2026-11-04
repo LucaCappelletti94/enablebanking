@@ -170,25 +170,66 @@ fn lower(spec: &mut Value) -> Result<(), String> {
         }
     }
     root.insert("openapi".to_owned(), Value::from("3.0.3"));
-    lower_value(spec, "")
+    lower_value(spec, "", false)
 }
 
-fn lower_value(value: &mut Value, path: &str) -> Result<(), String> {
+/// Lowers `value` and everything below it. In a `properties` map the keys are property names, so only the schemas they hold are lowered.
+fn lower_value(value: &mut Value, path: &str, properties_map: bool) -> Result<(), String> {
     match value {
+        Value::Object(object) if properties_map => {
+            for (name, schema) in object.iter_mut() {
+                lower_value(schema, &format!("{path}/{name}"), false)?;
+            }
+            Ok(())
+        }
         Value::Object(object) => {
             lower_object(object, path)?;
             for (key, child) in object.iter_mut() {
-                lower_value(child, &format!("{path}/{key}"))?;
+                lower_value(child, &format!("{path}/{key}"), key == "properties")?;
             }
             Ok(())
         }
         Value::Array(items) => {
             for (index, child) in items.iter_mut().enumerate() {
-                lower_value(child, &format!("{path}/{index}"))?;
+                lower_value(child, &format!("{path}/{index}"), false)?;
             }
             Ok(())
         }
         _ => Ok(()),
+    }
+}
+
+/// Marks every property outside `required` as nullable. The API sends `null` for unset optional properties, while the description only declares them optional.
+fn nullable_optionals(object: &mut Map<String, Value>) {
+    let required: Vec<String> = object
+        .get("required")
+        .and_then(Value::as_array)
+        .map(|names| {
+            names
+                .iter()
+                .filter_map(Value::as_str)
+                .map(str::to_owned)
+                .collect()
+        })
+        .unwrap_or_default();
+    let Some(Value::Object(properties)) = object.get_mut("properties") else {
+        return;
+    };
+    for (name, schema) in properties.iter_mut() {
+        if required.contains(name) {
+            continue;
+        }
+        let Value::Object(schema) = schema else {
+            continue;
+        };
+        if let Some(reference) = schema.remove("$ref") {
+            // A `$ref` ignores its siblings in OpenAPI 3.0, so the reference moves into an `allOf` that can carry `nullable`.
+            schema.insert(
+                "allOf".to_owned(),
+                Value::Array(vec![serde_json::json!({ "$ref": reference })]),
+            );
+        }
+        schema.insert("nullable".to_owned(), Value::Bool(true));
     }
 }
 
@@ -232,6 +273,7 @@ fn lower_object(object: &mut Map<String, Value>, path: &str) -> Result<(), Strin
             }
         }
     }
+    nullable_optionals(object);
     Ok(())
 }
 
@@ -282,7 +324,7 @@ mod tests {
     fn nullable_type_lists_constants_and_schema_examples_become_openapi_3_0() {
         let mut spec = json!({
             "openapi": "3.1.0",
-            "components": {"schemas": {"Note": {"type": "object", "properties": {
+            "components": {"schemas": {"Note": {"type": "object", "required": ["text", "kind", "parent", "either", "tags"], "properties": {
                 "text": {"type": ["string", "null"], "examples": ["hello"]},
                 "kind": {"const": "note"},
                 "parent": {"anyOf": [{"$ref": "#/components/schemas/Note"}, {"type": "null"}]},
@@ -368,5 +410,42 @@ mod tests {
             let error = lower(&mut spec).unwrap_err();
             assert!(error.contains("unsupported OpenAPI version"), "{error}");
         }
+    }
+
+    #[test]
+    fn optional_properties_become_nullable_and_required_ones_stay() {
+        let mut spec = json!({
+            "openapi": "3.1.0",
+            "components": {"schemas": {"Party": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": {"type": "string"},
+                    "aliases": {"type": "array", "items": {"type": "string"}},
+                    "account": {"$ref": "#/components/schemas/Account", "description": "Where it pays from"},
+                    "examples": {"type": "string"},
+                    "if": {"type": "integer"},
+                },
+            }}},
+        });
+        lower(&mut spec).unwrap();
+        let properties = &spec["components"]["schemas"]["Party"]["properties"];
+        assert_eq!(properties["name"], json!({"type": "string"}));
+        assert_eq!(
+            properties["aliases"],
+            json!({"type": "array", "items": {"type": "string"}, "nullable": true})
+        );
+        assert_eq!(
+            properties["account"],
+            json!({"allOf": [{"$ref": "#/components/schemas/Account"}], "description": "Where it pays from", "nullable": true})
+        );
+        assert_eq!(
+            properties["examples"],
+            json!({"type": "string", "nullable": true})
+        );
+        assert_eq!(
+            properties["if"],
+            json!({"type": "integer", "nullable": true})
+        );
     }
 }

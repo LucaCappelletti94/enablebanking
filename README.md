@@ -12,12 +12,20 @@ Async client for the [Enable Banking API](https://enablebanking.com/docs/api/ref
 use enablebanking::types::{Access, Aspsp, AuthorizeSessionRequest, StartAuthorizationRequest};
 use enablebanking::{API_URL, Client, Signer};
 
-# const APPLICATION_ID: &str = "cf589be3-3755-465b-a8df-a90a16a31403";
-# fn main() -> Result<(), Box<dyn std::error::Error>> {
+# include!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/support/readme_mock.rs"));
+# #[tokio::main(flavor = "current_thread")]
+# async fn main() -> Result<(), Box<dyn std::error::Error>> {
 // The application id and the private key of the certificate uploaded when registering the application.
 let key = std::fs::read("tests/fixtures/test-key.pem")?;
 let client = Client::new(API_URL, Signer::new(APPLICATION_ID, &key)?);
-# let _ = (link, transactions);
+# let bank = mock_bank().await;
+# let client = Client::new(&bank.uri(), Signer::new(APPLICATION_ID, &key)?);
+
+let url = link(&client).await?;
+println!("approve access at {url}");
+// The bank then sends the user to the redirect URL with `?code=…`.
+# let code = "redirect code";
+transactions(&client, code).await?;
 # Ok(())
 # }
 
@@ -63,4 +71,4 @@ The method names follow the API: `start_authorization`, `authorize_session`, `ge
 
 ## Keeping up with the API
 
-`spec/enablebanking-api.yaml` is a verbatim copy of the published description, and `src/generated.rs` is produced from it by `cargo run -p codegen`. Continuous integration fails when the generated file is stale. A weekly workflow downloads the published description and, when it changed, opens a pull request with the regenerated client. A new endpoint stops generation until it is given a method name in `codegen`, so names stay readable.
+`spec/enablebanking-api.yaml` is a verbatim copy of the published description, and `src/generated.rs` is produced from it by `cargo run -p codegen`. Continuous integration fails when the generated file is stale. A weekly workflow downloads the published description and, when it changed, opens a pull request with the regenerated client. A new endpoint stops generation until it is given a method name in `codegen`, so names stay readable. Optional properties are generated as nullable, because the API sends `null` for unset ones although the description does not declare it. A weekly job also reads a Mock ASPSP account through the real sandbox API.

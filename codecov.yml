@@ -1,3 +1,5 @@
 ignore:
   - src/generated.rs
   - codegen
+  # Runs only in the weekly sandbox workflow, against the real API.
+  - examples

@@ -1,0 +1,29 @@
+name: Sandbox
+
+on:
+  schedule:
+    - cron: "37 6 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  sandbox:
+    if: github.repository == 'LucaCappelletti94/enablebanking'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: rustup toolchain install stable --profile minimal && rustup default stable
+      # Reads the Mock ASPSP accounts of a session approved once in the browser. When the session expires, renew it with the `link` and `session` commands of the example and update the secret.
+      - name: Read the sandbox through the real API
+        env:
+          ENABLEBANKING_SANDBOX_APP: ${{ secrets.ENABLEBANKING_SANDBOX_APP }}
+          ENABLEBANKING_SANDBOX_KEY: ${{ secrets.ENABLEBANKING_SANDBOX_KEY }}
+          ENABLEBANKING_SANDBOX_SESSION: ${{ secrets.ENABLEBANKING_SANDBOX_SESSION }}
+        run: cargo run --locked --example sandbox
