@@ -1,5 +1,7 @@
 //! The generator as continuous integration and maintainers run it, on a copy of the workspace.
 
+#![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
+
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 

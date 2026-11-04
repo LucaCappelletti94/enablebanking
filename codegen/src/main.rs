@@ -59,6 +59,7 @@ const UNSUPPORTED: &[&str] = &[
     "contentSchema",
 ];
 
+/// The keys of a Path Item Object that hold operations.
 const HTTP_METHODS: &[&str] = &[
     "get", "put", "post", "delete", "options", "head", "patch", "trace",
 ];
@@ -81,6 +82,7 @@ fn main() -> ExitCode {
     }
 }
 
+/// Generates the client under `root`, or with `check` only compares it with the checked-in one.
 fn run(root: &Path, check: bool) -> Result<(), String> {
     let spec_path = root.join("spec/enablebanking-api.yaml");
     let output_path = root.join("src/generated.rs");
@@ -149,6 +151,7 @@ fn generate(yaml: &str) -> Result<String, String> {
     ))
 }
 
+/// The schema of a string with `format`, as typify matches conversions.
 fn string_format(format: &str) -> SchemaObject {
     SchemaObject {
         instance_type: Some(InstanceType::String.into()),

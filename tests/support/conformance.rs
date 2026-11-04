@@ -1,16 +1,24 @@
 // Strict validation of raw API responses against the vendored description, pulled in by `include!`.
 
+/// Checks raw responses against the vendored description.
+#[expect(
+    clippy::expect_used,
+    reason = "test support, where an unreadable description should stop the run"
+)]
 mod conformance {
     use serde_json::{Value, json};
 
     /// The description made strict: no undeclared properties, and `null` only where the description allows it or the property is optional, as the API sends them.
-    pub struct Conformance {
+    pub(crate) struct Conformance {
+        /// Component schemas, made strict.
         components: Value,
+        /// Path items, with their response schemas made strict.
         paths: Value,
     }
 
     impl Conformance {
-        pub fn new() -> Self {
+        /// The vendored description, made strict.
+        pub(crate) fn new() -> Self {
             let mut spec: Value =
                 serde_norway::from_str(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/spec/enablebanking-api.yaml")))
                     .expect("the vendored description is YAML");
@@ -22,7 +30,7 @@ mod conformance {
         }
 
         /// Every way a `status` response to `method path` departs from what the description documents for that operation.
-        pub fn response_violations(&self, method: &str, path: &str, status: u16, body: &[u8]) -> Vec<String> {
+        pub(crate) fn response_violations(&self, method: &str, path: &str, status: u16, body: &[u8]) -> Vec<String> {
             let Some(operation) = self.operation(method, path) else {
                 return vec![format!("{method} {path} is not described")];
             };
@@ -55,6 +63,7 @@ mod conformance {
                 .and_then(|(_, item)| item.get(&method))
         }
 
+        /// Every way `body` departs from `schema`, whose references point into the components.
         fn validate(&self, schema: &Value, body: &Value) -> Vec<String> {
             let mut root = schema.clone();
             root["components"] = self.components.clone();
@@ -69,6 +78,7 @@ mod conformance {
         }
     }
 
+    /// Forbids undeclared properties and lets optional properties be `null`. In a `properties` map the keys are property names.
     fn strict(value: &mut Value, properties_map: bool) {
         match value {
             Value::Object(object) if properties_map => {

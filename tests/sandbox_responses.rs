@@ -1,5 +1,7 @@
 //! Responses recorded from Enable Banking's sandbox (Mock ASPSP holding Enable Banking's synthetic Danske Bank sample), which send `null` for many optional properties.
 
+#![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
+
 use enablebanking::types::{
     AccountResource, CreditDebitIndicator, Environment, GetApplicationResponse, GetSessionResponse,
     HalBalances, HalTransactions,

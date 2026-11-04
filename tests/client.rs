@@ -1,5 +1,7 @@
 //! The client against a local server speaking the Enable Banking API.
 
+#![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
+
 use enablebanking::types::{CreditDebitIndicator, ErrorCode};
 use enablebanking::{Amount, Client, Error, SignError, Signer};
 use jiff::civil::date;

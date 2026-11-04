@@ -43,6 +43,8 @@ members = ["codegen"]
 
 [workspace.lints.rust]
 missing_docs = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+unreachable_pub = "warn"
 unsafe_code = "forbid"
 unused_qualifications = "warn"
 
@@ -50,7 +52,12 @@ unused_qualifications = "warn"
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
+expect_used = "warn"
+missing_docs_in_private_items = "warn"
 multiple_crate_versions = "allow"
+# Contradicts the unreachable_pub lint enabled above, which asks for pub(crate) where this asks for pub.
+redundant_pub_crate = "allow"
+unwrap_used = "warn"
 
 [lints]
 workspace = true

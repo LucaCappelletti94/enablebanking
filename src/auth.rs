@@ -18,9 +18,13 @@ const RENEWAL_MARGIN: SignedDuration = SignedDuration::from_mins(5);
 #[derive(Clone)]
 pub struct Signer(Arc<Inner>);
 
+/// The state a [`Signer`] and its clones share.
 struct Inner {
+    /// Application id, sent as the token's key id.
     application_id: String,
+    /// The application's RSA private key.
     key: EncodingKey,
+    /// The last token and when it expires.
     cached: Mutex<Option<(String, Timestamp)>>,
 }
 
@@ -35,11 +39,16 @@ pub enum SignError {
     Signing(#[source] jsonwebtoken::errors::Error),
 }
 
+/// The claims Enable Banking requires in every token.
 #[derive(Serialize)]
 struct Claims<'a> {
+    /// Issuer, always `enablebanking.com`.
     iss: &'a str,
+    /// Audience, always `api.enablebanking.com`.
     aud: &'a str,
+    /// Issue time, in seconds since the epoch.
     iat: i64,
+    /// Expiry time, in seconds since the epoch.
     exp: i64,
 }
 
@@ -97,6 +106,7 @@ impl Signer {
             .map(|(token, _)| token.clone())
     }
 
+    /// The cache, usable even after a panic poisoned its lock.
     fn cache(&self) -> std::sync::MutexGuard<'_, Option<(String, Timestamp)>> {
         self.0
             .cached

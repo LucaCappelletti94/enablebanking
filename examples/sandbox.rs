@@ -19,11 +19,16 @@ use recorder::Recorder;
 use serde_json::{Map, Value};
 use uuid::Uuid;
 
+/// The result of a step, with any error.
 type Result<T, E = Box<dyn std::error::Error + Send + Sync>> = std::result::Result<T, E>;
 
+/// The sandbox bank whose consent pages need no credentials.
 const BANK: &str = "Nordea";
+/// Country of [`BANK`].
 const COUNTRY: &str = "FI";
+/// Where the bank sends the browser back, as registered for the sandbox application.
 const REDIRECT: &str = "https://github.com/LucaCappelletti94/enablebanking";
+/// A sandbox account that receives the test payments.
 const CREDITOR_IBAN: &str = "FI6593857450293470";
 
 #[tokio::main(flavor = "current_thread")]
@@ -46,6 +51,7 @@ async fn main() -> ExitCode {
     }
 }
 
+/// The environment variable `name`.
 fn variable(name: &str) -> Result<String> {
     std::env::var(name).map_err(|_| format!("{name} is not set").into())
 }
@@ -286,6 +292,7 @@ async fn settle(client: &Client, payment: Uuid) -> Result<bool> {
 
 /// A headless Chrome that clicks through the sandbox consent pages.
 struct Consent {
+    /// The browser, started with a throwaway profile.
     browser: Browser,
 }
 
@@ -348,6 +355,7 @@ async fn click(page: &Page, label: &str) -> Result<()> {
     Ok(())
 }
 
+/// Waits up to 30 seconds for the JavaScript `condition` to hold on `page`.
 async fn wait_for_script(page: &Page, condition: &str) -> Result<()> {
     for _ in 0..60 {
         if page
@@ -364,6 +372,7 @@ async fn wait_for_script(page: &Page, condition: &str) -> Result<()> {
     Err(format!("timed out waiting for `{condition}`").into())
 }
 
+/// Waits up to 30 seconds for the URL of `page` to satisfy `done`, and returns it.
 async fn wait_for(page: &Page, done: impl Fn(&str) -> bool) -> Result<String> {
     for _ in 0..60 {
         if let Some(url) = page.url().await?.filter(|url| done(url)) {
@@ -379,6 +388,7 @@ include!(concat!(
     "/tests/support/conformance.rs"
 ));
 
+/// The forwarding server that keeps raw responses.
 mod recorder {
     use std::sync::{Arc, Mutex};
 
@@ -392,23 +402,31 @@ mod recorder {
     use tokio::net::TcpListener;
 
     /// One request the client made, with the raw response.
-    pub struct Exchange {
-        pub method: String,
-        pub path: String,
-        pub status: u16,
-        pub body: Vec<u8>,
+    pub(crate) struct Exchange {
+        /// HTTP method of the request.
+        pub(crate) method: String,
+        /// Path of the request, without the query.
+        pub(crate) path: String,
+        /// Status of the response.
+        pub(crate) status: u16,
+        /// Raw body of the response.
+        pub(crate) body: Vec<u8>,
     }
 
+    /// The exchanges so far, shared with the server tasks.
     type Log = Arc<Mutex<Vec<Exchange>>>;
 
     /// A local HTTP server that forwards every request to the API and keeps each raw response, so a response to any method is checked without sending the request twice.
-    pub struct Recorder {
+    pub(crate) struct Recorder {
+        /// Base URL the client is pointed at.
         url: String,
+        /// Every exchange so far.
         log: Log,
     }
 
     impl Recorder {
-        pub async fn start(upstream: &str) -> super::Result<Self> {
+        /// Starts forwarding to `upstream` on a free local port.
+        pub(crate) async fn start(upstream: &str) -> super::Result<Self> {
             let listener = TcpListener::bind("127.0.0.1:0").await?;
             let url = format!("http://{}", listener.local_addr()?);
             let log = Log::default();
@@ -432,12 +450,13 @@ mod recorder {
             Ok(Self { url, log })
         }
 
-        pub fn url(&self) -> &str {
+        /// Base URL to give the client.
+        pub(crate) fn url(&self) -> &str {
             &self.url
         }
 
         /// Every exchange so far, in order.
-        pub fn exchanges(&self) -> Vec<Exchange> {
+        pub(crate) fn exchanges(&self) -> Vec<Exchange> {
             std::mem::take(
                 &mut *self
                     .log
@@ -447,6 +466,7 @@ mod recorder {
         }
     }
 
+    /// Sends `request` on to `upstream`, logs the response, and returns it unchanged.
     async fn forward(
         http: reqwest::Client,
         upstream: String,
@@ -490,12 +510,11 @@ mod recorder {
                 status: status.as_u16(),
                 body: bytes.to_vec(),
             });
-        let mut response = Response::builder().status(status);
+        let mut response = Response::new(Full::new(bytes));
+        *response.status_mut() = status;
         if let Some(content_type) = content_type {
-            response = response.header(CONTENT_TYPE, content_type);
+            response.headers_mut().insert(CONTENT_TYPE, content_type);
         }
-        Ok(response
-            .body(Full::new(bytes))
-            .expect("a status and a content type make a valid response"))
+        Ok(response)
     }
 }

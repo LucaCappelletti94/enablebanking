@@ -1,5 +1,7 @@
 //! The strict check the weekly sandbox job applies to every raw response.
 
+#![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
+
 use serde_json::json;
 
 include!("support/conformance.rs");
