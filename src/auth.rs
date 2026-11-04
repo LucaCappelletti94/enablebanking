@@ -60,12 +60,6 @@ impl Signer {
         })))
     }
 
-    /// The application id, which every token carries as its key id.
-    #[must_use]
-    pub fn application_id(&self) -> &str {
-        &self.0.application_id
-    }
-
     /// A token valid at least for the next few minutes, signed now or reused from an earlier call.
     ///
     /// # Errors

@@ -60,7 +60,7 @@ impl ClientHooks<Signer> for Client {
             .token()
             .map_err(|error| Error::Custom(error.to_string()))?;
         let value = HeaderValue::from_str(&format!("Bearer {token}"))
-            .map_err(|error| Error::Custom(error.to_string()))?;
+            .expect("a JWT holds only base64url characters and dots");
         request.headers_mut().insert(AUTHORIZATION, value);
         Ok(())
     }

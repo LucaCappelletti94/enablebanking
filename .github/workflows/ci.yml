@@ -33,6 +33,14 @@ jobs:
       - run: rustup toolchain install 1.88 --profile minimal && rustup default 1.88
       - run: cargo check -p enablebanking --lib --locked
 
+  minimal-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install nightly --profile minimal && rustup default nightly
+      - run: cargo update -Z direct-minimal-versions
+      - run: cargo test -p enablebanking --all-targets
+
   coverage:
     runs-on: ubuntu-latest
     permissions:

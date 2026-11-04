@@ -45,3 +45,10 @@ multiple_crate_versions = "allow"
 
 [lints]
 workspace = true
+
+[profile.mutants]
+inherits = "test"
+debug = "none"
+
+[package.metadata.docs.rs]
+all-features = true

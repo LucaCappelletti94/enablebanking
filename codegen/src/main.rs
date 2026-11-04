@@ -1,6 +1,6 @@
 //! Writes `src/generated.rs` from `spec/enablebanking-api.yaml`.
 //!
-//! Run `cargo run -p codegen` after updating the spec, and `cargo run -p codegen -- --check` to fail when the checked-in client is stale.
+//! Run `cargo run -p codegen` from the workspace root after updating the spec, and `cargo run -p codegen -- --check` to fail when the checked-in client is stale.
 
 use std::path::Path;
 use std::process::ExitCode;
@@ -72,11 +72,7 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
-    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .expect("codegen sits inside the workspace")
-        .to_path_buf();
-    match run(&root, check) {
+    match run(Path::new("."), check) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             eprintln!("codegen: {error}");
@@ -280,7 +276,7 @@ fn name_operations(spec: &mut Value) -> Result<(), String> {
 mod tests {
     use serde_json::json;
 
-    use super::{lower, name_operations};
+    use super::{OPERATIONS, lower, name_operations};
 
     #[test]
     fn nullable_type_lists_constants_and_schema_examples_become_openapi_3_0() {
@@ -290,6 +286,8 @@ mod tests {
                 "text": {"type": ["string", "null"], "examples": ["hello"]},
                 "kind": {"const": "note"},
                 "parent": {"anyOf": [{"$ref": "#/components/schemas/Note"}, {"type": "null"}]},
+                "either": {"anyOf": [{"type": "string"}, {"type": "integer"}]},
+                "tags": {"allOf": [{"type": ["array", "null"], "items": {"type": "string"}}]},
             }}}},
             "paths": {"/notes": {"get": {"parameters": [{"name": "q", "in": "query", "examples": {"one": {"value": "a"}}}]}}},
         });
@@ -304,6 +302,14 @@ mod tests {
         assert_eq!(
             properties["parent"],
             json!({"anyOf": [{"$ref": "#/components/schemas/Note"}], "nullable": true})
+        );
+        assert_eq!(
+            properties["either"],
+            json!({"anyOf": [{"type": "string"}, {"type": "integer"}]})
+        );
+        assert_eq!(
+            properties["tags"]["allOf"][0],
+            json!({"type": "array", "nullable": true, "items": {"type": "string"}})
         );
         assert_eq!(
             spec["paths"]["/notes"]["get"]["parameters"][0]["examples"],
@@ -336,5 +342,22 @@ mod tests {
         let mut spec = json!({"paths": {"/application": {"get": {"operationId": "x"}}}});
         let error = name_operations(&mut spec).unwrap_err();
         assert!(error.contains("remove the names"), "{error}");
+    }
+
+    #[test]
+    fn every_listed_operation_gets_its_name() {
+        let mut paths = serde_json::Map::new();
+        for (key, _) in OPERATIONS {
+            let (method, path) = key.split_once(' ').unwrap();
+            let item = paths.entry(path.to_owned()).or_insert_with(|| json!({}));
+            item[method.to_lowercase()] = json!({"operationId": "machine_made"});
+        }
+        let mut spec = json!({"paths": paths});
+        name_operations(&mut spec).unwrap();
+        assert_eq!(spec["paths"]["/aspsps"]["get"]["operationId"], "get_aspsps");
+        assert_eq!(
+            spec["paths"]["/accounts/{account_id}/transactions"]["get"]["operationId"],
+            "get_account_transactions"
+        );
     }
 }

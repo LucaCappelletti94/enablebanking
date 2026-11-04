@@ -125,6 +125,7 @@ async fn all_transactions_follows_continuation_keys() {
     Mock::given(method("GET"))
         .and(path(transactions.as_str()))
         .and(query_param("date_from", "2026-10-01"))
+        .and(query_param("date_to", "2026-10-31"))
         .and(query_param_is_missing("continuation_key"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "transactions": [transaction("t1", "7123.45", "CRDT")],
@@ -136,6 +137,7 @@ async fn all_transactions_follows_continuation_keys() {
     Mock::given(method("GET"))
         .and(path(transactions.as_str()))
         .and(query_param("date_from", "2026-10-01"))
+        .and(query_param("date_to", "2026-10-31"))
         .and(query_param("continuation_key", "page-2"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "transactions": [transaction("t2", "12.50", "DBIT")],
@@ -146,7 +148,7 @@ async fn all_transactions_follows_continuation_keys() {
         .await;
 
     let found = client(&server)
-        .all_transactions(ACCOUNT, Some(date(2026, 10, 1)), None)
+        .all_transactions(ACCOUNT, Some(date(2026, 10, 1)), Some(date(2026, 10, 31)))
         .await
         .unwrap();
 
@@ -220,6 +222,15 @@ fn a_key_that_is_not_rsa_pem_is_refused() {
         ),
         Err(SignError::Key(_))
     ));
+}
+
+#[test]
+fn debug_output_names_the_application_but_never_the_key() {
+    let shown = format!("{:?}", Signer::new(APP, KEY).unwrap());
+    assert!(shown.contains(APP), "{shown}");
+    let key = std::str::from_utf8(KEY).unwrap();
+    let body_line = key.lines().nth(1).unwrap();
+    assert!(!shown.contains(body_line), "{shown}");
 }
 
 #[test]
