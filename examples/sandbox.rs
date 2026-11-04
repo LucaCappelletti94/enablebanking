@@ -1,4 +1,4 @@
-//! Calls every endpoint against Enable Banking's sandbox, approving consents for the Nordea FI sandbox in a headless Chrome, and checks each GET response strictly against `spec/enablebanking-api.yaml`.
+//! Calls every endpoint against Enable Banking's sandbox, approving consents for the Nordea FI sandbox in a headless Chrome, and checks every response strictly against `spec/enablebanking-api.yaml`.
 //!
 //! Environment: `ENABLEBANKING_SANDBOX_APP` (application id), `ENABLEBANKING_SANDBOX_KEY` (its private key in PEM) and optionally `CHROME`, the browser to drive instead of the one found on the system.
 //!
@@ -15,6 +15,7 @@ use enablebanking::types::{
 use enablebanking::{API_URL, Client, Error, Signer};
 use futures_util::StreamExt;
 use jiff::{SignedDuration, Timestamp};
+use recorder::Recorder;
 use serde_json::{Map, Value};
 use uuid::Uuid;
 
@@ -55,26 +56,48 @@ async fn run() -> Result<Vec<String>> {
         variable("ENABLEBANKING_SANDBOX_APP")?,
         variable("ENABLEBANKING_SANDBOX_KEY")?.as_bytes(),
     )?;
-    let client = Client::new(API_URL, signer.clone());
-    let mut check = Checker::new(signer);
+    let recorder = Recorder::start(API_URL).await?;
+    let client = Client::new(recorder.url(), signer);
     let chrome = std::env::var("CHROME").ok();
     let consent = Consent::start(chrome.as_deref()).await?;
+    let mut failures = Vec::new();
 
     let application = client.get_application().send().await?;
     if application.environment != Environment::Sandbox {
         return Err(format!("{} is not a sandbox application", application.name).into());
     }
-    check.get("/application", "GetApplicationResponse").await;
     client.get_aspsps().country(COUNTRY).send().await?;
-    check.get("/aspsps", "GetAspspsResponse").await;
+    accounts(&client, &mut failures, &consent).await?;
+    payments(&client, &mut failures, &consent).await?;
 
-    accounts(&client, &mut check, &consent).await?;
-    payments(&client, &mut check, &consent).await?;
-    Ok(check.failures)
+    let conformance = Conformance::new();
+    let exchanges = recorder.exchanges();
+    for exchange in &exchanges {
+        for violation in conformance
+            .response_violations(
+                &exchange.method,
+                &exchange.path,
+                exchange.status,
+                &exchange.body,
+            )
+            .into_iter()
+            .take(10)
+        {
+            failures.push(format!(
+                "{} {} {}: {violation}",
+                exchange.method, exchange.path, exchange.status
+            ));
+        }
+    }
+    println!(
+        "{} responses checked against the description",
+        exchanges.len()
+    );
+    Ok(failures)
 }
 
 /// Links the sandbox bank, reads every account, then deletes the session.
-async fn accounts(client: &Client, check: &mut Checker, consent: &Consent) -> Result<()> {
+async fn accounts(client: &Client, failures: &mut Vec<String>, consent: &Consent) -> Result<()> {
     let started = client
         .start_authorization()
         .body(
@@ -101,30 +124,18 @@ async fn accounts(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         .session_id(session_id.as_str())
         .send()
         .await?;
-    check
-        .get(&format!("/sessions/{session_id}"), "GetSessionResponse")
-        .await;
     for account in session.accounts.iter().filter_map(|account| account.uid) {
         client
             .get_account_details()
             .account_id(account)
             .send()
             .await?;
-        check
-            .get(&format!("/accounts/{account}/details"), "AccountResource")
-            .await;
         client
             .get_account_balances()
             .account_id(account)
             .send()
             .await?;
-        check
-            .get(&format!("/accounts/{account}/balances"), "HalBalances")
-            .await;
         let transactions = client.all_transactions(account, None, None).await?;
-        check
-            .pages(&format!("/accounts/{account}/transactions"))
-            .await;
         println!("account {account}: {} transactions", transactions.len());
         match client
             .get_transaction()
@@ -135,7 +146,7 @@ async fn accounts(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         {
             Err(Error::ErrorResponse(response))
                 if response.error == Some(ErrorCode::TransactionDoesNotExist) => {}
-            other => check.fail(format!("get_transaction of a missing id: {other:?}")),
+            other => failures.push(format!("get_transaction of a missing id: {other:?}")),
         }
     }
     client
@@ -149,7 +160,7 @@ async fn accounts(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         .send()
         .await?;
     if closed.status != SessionStatus::Closed {
-        check.fail(format!(
+        failures.push(format!(
             "session {session_id} is {:?} after deletion",
             closed.status
         ));
@@ -183,7 +194,7 @@ fn payment(kind: &str, request: &Value) -> Result<CreatePaymentRequest> {
 }
 
 /// Pays once and in bulk from the sandbox bank, reads the payments and their transactions, then deletes them.
-async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Result<()> {
+async fn payments(client: &Client, failures: &mut Vec<String>, consent: &Consent) -> Result<()> {
     let single = client
         .create_payment()
         .body(payment(
@@ -194,12 +205,6 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         .await?;
     consent.approve_payment(single.url.as_str()).await?;
     let paid = settle(client, single.payment_id).await?;
-    check
-        .get(
-            &format!("/payments/{}", single.payment_id),
-            "GetPaymentResponse",
-        )
-        .await;
     match client
         .submit_payment()
         .payment_id(single.payment_id)
@@ -209,7 +214,7 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
     {
         Err(Error::ErrorResponse(response))
             if response.error == Some(ErrorCode::PaymentSubmissionNotDeferred) => {}
-        other => check.fail(format!(
+        other => failures.push(format!(
             "submit_payment on a payment without deferred submission: {other:?}"
         )),
     }
@@ -220,7 +225,7 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
             .send()
             .await?;
     } else {
-        check.fail(format!(
+        failures.push(format!(
             "payment {} never reached a final status",
             single.payment_id
         ));
@@ -243,12 +248,6 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         .payment_id(bulk.payment_id)
         .send()
         .await?;
-    check
-        .get(
-            &format!("/payments/{}", bulk.payment_id),
-            "GetPaymentResponse",
-        )
-        .await;
     let ids: Vec<String> = payment
         .payment_details
         .credit_transfer_transaction
@@ -257,7 +256,7 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
         .filter_map(|transfer| transfer.transaction_id.clone())
         .collect();
     if ids.is_empty() {
-        check.fail(format!(
+        failures.push(format!(
             "bulk payment {} lists no transaction ids",
             bulk.payment_id
         ));
@@ -269,12 +268,6 @@ async fn payments(client: &Client, check: &mut Checker, consent: &Consent) -> Re
             .transaction_id(id.as_str())
             .send()
             .await?;
-        check
-            .get(
-                &format!("/payments/{}/transactions/{id}", bulk.payment_id),
-                "GetPaymentTransactionResponse",
-            )
-            .await;
     }
     Ok(())
 }
@@ -381,84 +374,128 @@ async fn wait_for(page: &Page, done: impl Fn(&str) -> bool) -> Result<String> {
     Err(format!("timed out on {:?}", page.url().await?).into())
 }
 
-/// Re-fetches GET responses raw and records how they depart from the description.
-struct Checker {
-    signer: Signer,
-    http: reqwest::Client,
-    conformance: Conformance,
-    failures: Vec<String>,
-}
-
-impl Checker {
-    fn new(signer: Signer) -> Self {
-        Self {
-            signer,
-            http: reqwest::Client::new(),
-            conformance: Conformance::new(),
-            failures: Vec::new(),
-        }
-    }
-
-    fn fail(&mut self, failure: String) {
-        self.failures.push(failure);
-    }
-
-    async fn fetch(&self, path: &str) -> Result<Value> {
-        let response = self
-            .http
-            .get(format!("{API_URL}{path}"))
-            .bearer_auth(self.signer.token()?)
-            .send()
-            .await?
-            .error_for_status()?;
-        Ok(response.json().await?)
-    }
-
-    /// Fetches `path` again and validates it as `schema`.
-    async fn get(&mut self, path: &str, schema: &str) {
-        match self.fetch(path).await {
-            Ok(body) => self.validate(path, schema, &body),
-            Err(error) => self.fail(format!("GET {path}: {error}")),
-        }
-    }
-
-    /// Validates every page of the transactions at `path`.
-    async fn pages(&mut self, path: &str) {
-        let mut key: Option<String> = None;
-        loop {
-            let page_path = key.as_ref().map_or_else(
-                || path.to_owned(),
-                |key| format!("{path}?continuation_key={key}"),
-            );
-            let body = match self.fetch(&page_path).await {
-                Ok(body) => body,
-                Err(error) => return self.fail(format!("GET {page_path}: {error}")),
-            };
-            self.validate(path, "HalTransactions", &body);
-            key = body
-                .get("continuation_key")
-                .and_then(Value::as_str)
-                .filter(|key| !key.is_empty())
-                .map(str::to_owned);
-            if key.is_none() {
-                return;
-            }
-        }
-    }
-
-    fn validate(&mut self, path: &str, schema: &str, body: &Value) {
-        for violation in self
-            .conformance
-            .violations(schema, body)
-            .into_iter()
-            .take(10)
-        {
-            self.fail(format!("GET {path} ({schema}): {violation}"));
-        }
-    }
-}
-
 include!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/tests/support/conformance.rs"
 ));
+
+mod recorder {
+    use std::sync::{Arc, Mutex};
+
+    use bytes::Bytes;
+    use http_body_util::{BodyExt, Full};
+    use hyper::body::Incoming;
+    use hyper::header::{CONTENT_TYPE, HOST};
+    use hyper::service::service_fn;
+    use hyper::{Request, Response};
+    use hyper_util::rt::TokioIo;
+    use tokio::net::TcpListener;
+
+    /// One request the client made, with the raw response.
+    pub struct Exchange {
+        pub method: String,
+        pub path: String,
+        pub status: u16,
+        pub body: Vec<u8>,
+    }
+
+    type Log = Arc<Mutex<Vec<Exchange>>>;
+
+    /// A local HTTP server that forwards every request to the API and keeps each raw response, so a response to any method is checked without sending the request twice.
+    pub struct Recorder {
+        url: String,
+        log: Log,
+    }
+
+    impl Recorder {
+        pub async fn start(upstream: &str) -> super::Result<Self> {
+            let listener = TcpListener::bind("127.0.0.1:0").await?;
+            let url = format!("http://{}", listener.local_addr()?);
+            let log = Log::default();
+            let http = reqwest::Client::new();
+            let upstream = upstream.to_owned();
+            let shared = Arc::clone(&log);
+            tokio::spawn(async move {
+                while let Ok((stream, _)) = listener.accept().await {
+                    let (http, upstream, log) =
+                        (http.clone(), upstream.clone(), Arc::clone(&shared));
+                    tokio::spawn(async move {
+                        let service = service_fn(move |request| {
+                            forward(http.clone(), upstream.clone(), Arc::clone(&log), request)
+                        });
+                        let _ = hyper::server::conn::http1::Builder::new()
+                            .serve_connection(TokioIo::new(stream), service)
+                            .await;
+                    });
+                }
+            });
+            Ok(Self { url, log })
+        }
+
+        pub fn url(&self) -> &str {
+            &self.url
+        }
+
+        /// Every exchange so far, in order.
+        pub fn exchanges(&self) -> Vec<Exchange> {
+            std::mem::take(
+                &mut *self
+                    .log
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner),
+            )
+        }
+    }
+
+    async fn forward(
+        http: reqwest::Client,
+        upstream: String,
+        log: Log,
+        request: Request<Incoming>,
+    ) -> Result<Response<Full<Bytes>>, hyper::Error> {
+        let (mut parts, body) = request.into_parts();
+        let body = body.collect().await?.to_bytes();
+        let target = format!(
+            "{upstream}{}",
+            parts.uri.path_and_query().map_or("", |path| path.as_str())
+        );
+        parts.headers.remove(HOST);
+        let reply = http
+            .request(parts.method.clone(), target)
+            .headers(parts.headers)
+            .body(body)
+            .send()
+            .await;
+        let (status, content_type, bytes) = match reply {
+            Ok(reply) => {
+                let status = reply.status();
+                let content_type = reply.headers().get(CONTENT_TYPE).cloned();
+                (
+                    status,
+                    content_type,
+                    reply.bytes().await.unwrap_or_default(),
+                )
+            }
+            Err(error) => (
+                hyper::StatusCode::BAD_GATEWAY,
+                None,
+                Bytes::from(error.to_string()),
+            ),
+        };
+        log.lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .push(Exchange {
+                method: parts.method.to_string(),
+                path: parts.uri.path().to_owned(),
+                status: status.as_u16(),
+                body: bytes.to_vec(),
+            });
+        let mut response = Response::builder().status(status);
+        if let Some(content_type) = content_type {
+            response = response.header(CONTENT_TYPE, content_type);
+        }
+        Ok(response
+            .body(Full::new(bytes))
+            .expect("a status and a content type make a valid response"))
+    }
+}

@@ -3,24 +3,61 @@
 mod conformance {
     use serde_json::{Value, json};
 
-    /// The description's component schemas, made strict: no undeclared properties, and `null` only where the description allows it or the property is optional, as the API sends them.
+    /// The description made strict: no undeclared properties, and `null` only where the description allows it or the property is optional, as the API sends them.
     pub struct Conformance {
         components: Value,
+        paths: Value,
     }
 
     impl Conformance {
         pub fn new() -> Self {
-            let spec: Value =
+            let mut spec: Value =
                 serde_norway::from_str(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/spec/enablebanking-api.yaml")))
                     .expect("the vendored description is YAML");
-            let mut components = spec["components"].clone();
-            strict(&mut components, false);
-            Self { components }
+            strict(&mut spec, false);
+            Self {
+                components: spec["components"].take(),
+                paths: spec["paths"].take(),
+            }
         }
 
-        /// Every way `body` departs from component schema `schema`.
-        pub fn violations(&self, schema: &str, body: &Value) -> Vec<String> {
-            let root = json!({"$ref": format!("#/components/schemas/{schema}"), "components": self.components});
+        /// Every way a `status` response to `method path` departs from what the description documents for that operation.
+        pub fn response_violations(&self, method: &str, path: &str, status: u16, body: &[u8]) -> Vec<String> {
+            let Some(operation) = self.operation(method, path) else {
+                return vec![format!("{method} {path} is not described")];
+            };
+            let responses = &operation["responses"];
+            let Some(response) = responses.get(status.to_string()).or_else(|| responses.get("default")) else {
+                return vec![format!("status {status} is not documented")];
+            };
+            let Some(schema) = response.pointer("/content/application~1json/schema") else {
+                return if body.is_empty() { Vec::new() } else { vec!["a body where none is documented".to_owned()] };
+            };
+            match serde_json::from_slice(body) {
+                Ok(body) => self.validate(schema, &body),
+                Err(error) => vec![format!("the body is not JSON: {error}")],
+            }
+        }
+
+        /// The operation whose path template matches `path`, preferring templates with fewer parameters.
+        fn operation(&self, method: &str, path: &str) -> Option<&Value> {
+            let segments: Vec<&str> = path.split('/').collect();
+            let method = method.to_lowercase();
+            self.paths
+                .as_object()?
+                .iter()
+                .filter(|(template, _)| {
+                    let parts: Vec<&str> = template.split('/').collect();
+                    parts.len() == segments.len()
+                        && parts.iter().zip(&segments).all(|(part, segment)| part.starts_with('{') || part == segment)
+                })
+                .min_by_key(|(template, _)| template.matches('{').count())
+                .and_then(|(_, item)| item.get(&method))
+        }
+
+        fn validate(&self, schema: &Value, body: &Value) -> Vec<String> {
+            let mut root = schema.clone();
+            root["components"] = self.components.clone();
             let validator = jsonschema::options()
                 .with_draft(jsonschema::Draft::Draft202012)
                 .build(&root)

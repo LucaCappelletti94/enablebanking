@@ -486,8 +486,12 @@ dependencies = [
 name = "enablebanking"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "chromiumoxide",
  "futures-util",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
  "jiff",
  "jsonschema",
  "jsonwebtoken",
