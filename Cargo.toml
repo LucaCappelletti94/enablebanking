@@ -1,0 +1,47 @@
+[package]
+name = "enablebanking"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Typed async client for the Enable Banking open banking API, generated from its OpenAPI description"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/LucaCappelletti94/enablebanking"
+documentation = "https://docs.rs/enablebanking"
+authors = ["Luca Cappelletti <cappelletti.luca94@gmail.com>"]
+keywords = ["open-banking", "psd2", "enable-banking", "banking", "api"]
+categories = ["finance", "api-bindings"]
+include = ["/src", "/tests", "/README.md", "/LICENSE"]
+
+[dependencies]
+jiff = { version = "0.2.39", features = ["serde"] }
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs", "use_pem"] }
+progenitor-client = "0.15.1"
+regress = "0.12.0"
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "query", "rustls"] }
+rust_decimal = { version = "1.43.0", features = ["serde-with-str"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+uuid = { version = "1.23.4", features = ["serde"] }
+
+[dev-dependencies]
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+wiremock = "0.6.5"
+
+[workspace]
+members = ["codegen"]
+
+[workspace.lints.rust]
+missing_docs = "warn"
+unsafe_code = "forbid"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+multiple_crate_versions = "allow"
+
+[lints]
+workspace = true

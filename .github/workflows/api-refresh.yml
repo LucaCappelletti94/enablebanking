@@ -1,0 +1,61 @@
+name: API refresh
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  BRANCH: api-refresh
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download the published description
+        run: curl --fail --silent --show-error --location https://enablebanking.com/docs/api/reference/enablebanking-api.yaml --output spec/enablebanking-api.yaml
+      - name: Compare with the vendored copy
+        id: spec
+        run: |
+          if git diff --quiet -- spec; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- spec
+          fi
+      - if: steps.spec.outputs.changed == 'true'
+        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy && rustup default stable
+      - name: Regenerate the client
+        if: steps.spec.outputs.changed == 'true'
+        run: cargo run -p codegen --locked
+      - name: Test the regenerated client
+        if: steps.spec.outputs.changed == 'true'
+        run: |
+          cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+          cargo test --workspace --all-features --locked
+      - name: Open or update the pull request
+        if: steps.spec.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(sed -n 's/^  version: //p' spec/enablebanking-api.yaml)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --create "$BRANCH"
+          git add spec src/generated.rs
+          git commit --message "Regenerate for API version $version"
+          git push --force origin "$BRANCH"
+          body="Enable Banking published API version $version. This workflow regenerated the client and ran clippy and the tests on it. Pull requests opened by GitHub Actions do not start CI, so close and reopen this one to run the full checks."
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr create --head "$BRANCH" --title "Regenerate for API version $version" --body "$body"
+          else
+            gh pr edit "$BRANCH" --title "Regenerate for API version $version" --body "$body"
+          fi

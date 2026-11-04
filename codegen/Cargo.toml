@@ -1,0 +1,20 @@
+[package]
+name = "codegen"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+description = "Generates src/generated.rs from the vendored Enable Banking OpenAPI description"
+
+[dependencies]
+openapiv3 = "2.2.0"
+prettyplease = "0.2.37"
+progenitor-impl = "0.15.1"
+quote = "1.0.42"
+schemars = "0.8.22"
+serde_json = "1.0.154"
+serde_norway = "0.9.42"
+syn = "2.0.111"
+
+[lints]
+workspace = true
