@@ -2,9 +2,11 @@
 
 #![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
 
-use enablebanking::types::{CreditDebitIndicator, ErrorCode};
+use enablebanking::types::{
+    Access, Aspsp, CreditDebitIndicator, ErrorCode, StartAuthorizationRequest,
+};
 use enablebanking::{Amount, Client, Error, SignError, Signer};
-use jiff::civil::date;
+use jiff::{SignedDuration, Timestamp, civil::date};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation};
 use rust_decimal::Decimal;
 use serde::Deserialize;
@@ -264,6 +266,79 @@ async fn documented_errors_come_back_typed() {
     };
     assert_eq!(response.status().as_u16(), 422);
     assert_eq!(response.error, Some(ErrorCode::WrongTransactionsPeriod));
+}
+
+/// True when `value` or anything nested below it is a JSON null.
+fn has_null(value: &serde_json::Value) -> bool {
+    match value {
+        serde_json::Value::Null => true,
+        serde_json::Value::Object(map) => map.values().any(has_null),
+        serde_json::Value::Array(items) => items.iter().any(has_null),
+        _ => false,
+    }
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn start_authorization_without_optional_fields_sends_no_nulls() {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/auth"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "authorization_id": ACCOUNT,
+            "psu_id_hash": "a-hash",
+            "url": "https://asp.example.com/redirect",
+        })))
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let started = client(&server)
+        .start_authorization()
+        .body(
+            StartAuthorizationRequest::builder()
+                .access(
+                    Access::builder()
+                        .valid_until(Timestamp::now() + SignedDuration::from_hours(24))
+                        .balances(None::<bool>)
+                        .transactions(None::<bool>),
+                )
+                .aspsp(Aspsp::builder().name("CrediFriuli").country("IT"))
+                .credentials_autosubmit(None::<bool>)
+                .redirect_url("https://example.com/")
+                .state("no-nulls"),
+        )
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(started.authorization_id, ACCOUNT);
+
+    let request = &server.received_requests().await.unwrap()[0];
+    let body: serde_json::Value = serde_json::from_slice(&request.body).unwrap();
+    assert!(!has_null(&body), "the request body carries a null: {body}");
+    assert_eq!(body["aspsp"]["name"], "CrediFriuli");
+    assert_eq!(body["aspsp"]["country"], "IT");
+    assert_eq!(body["redirect_url"], "https://example.com/");
+    assert_eq!(body["state"], "no-nulls");
+    assert!(body["access"].get("valid_until").is_some());
+    for field in [
+        "credentials_autosubmit",
+        "auth_method",
+        "credentials",
+        "language",
+        "psu_id",
+        "psu_type",
+    ] {
+        assert!(
+            body.get(field).is_none(),
+            "`{field}` must be absent, not null"
+        );
+    }
+    for field in ["accounts", "balances", "transactions"] {
+        assert!(
+            body["access"].get(field).is_none(),
+            "`access.{field}` must be absent, not null"
+        );
+    }
 }
 
 #[test]

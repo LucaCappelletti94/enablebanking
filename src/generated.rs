@@ -16,11 +16,11 @@ access consent UI, while other may provide access to all accounts or just access
 the list of accounts.*/
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub accounts: ::std::option::Option<::std::vec::Vec<AccountIdentification>>,
-        ///Request consent with balances access
-        #[serde(default = "defaults::access_balances")]
+        ///Request consent with balances access The API applies `true` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub balances: ::std::option::Option<bool>,
-        ///Request consent with transactions access
-        #[serde(default = "defaults::access_transactions")]
+        ///Request consent with transactions access The API applies `true` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub transactions: ::std::option::Option<bool>,
         /**This parameter specifies the date and time until which the authorised session
 remains valid. The value must be in the RFC3339 date-time format with a timezone
@@ -384,8 +384,8 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub credentials: ::std::option::Option<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
         >,
-        ///Controls whether the payment submission for execution is deferred after PSU authorization. When set to true, the payment will not be automatically submitted for execution after PSU completes authorization at the ASPSP. Instead, an explicit call to POST /payments/{payment_id}/submit is required to submit the payment for execution. Only effective when the selected ASPSP payment type has deferred_submission_supported: true. Defaults to false.
-        #[serde(default = "defaults::create_payment_request_defer_submission")]
+        ///Controls whether the payment submission for execution is deferred after PSU authorization. When set to true, the payment will not be automatically submitted for execution after PSU completes authorization at the ASPSP. Instead, an explicit call to POST /payments/{payment_id}/submit is required to submit the payment for execution. Only effective when the selected ASPSP payment type has deferred_submission_supported: true. Defaults to false. The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub defer_submission: ::std::option::Option<bool>,
         ///Preferred PSU language. Two-letter lowercase language code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1038,8 +1038,8 @@ API: Unique identification shared between the PISP and the ASPSP
         ///Identification of the financial institution where the debtor account is held. To be provided only in case the financial institution can not be unambiguously identified the ASPSP name towards which the payment is initiated.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
-        ///ISO 4217 code, in which debtor account is held
-        #[serde(default = "defaults::payment_request_resource_debtor_currency")]
+        ///ISO 4217 code, in which debtor account is held The API applies `XXX` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_currency: ::std::option::Option<::std::string::String>,
         ///Reference assigned by a sending party to unambiguously identify the payment information block within the message
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1057,7 +1057,7 @@ API: Unique identification shared between the PISP and the ASPSP
         }
     }
     ///`PaymentRequestResourceDetails`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct PaymentRequestResourceDetails {
         ///Specifies which party/parties will bear the charges associated with the processing of the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1075,8 +1075,8 @@ API: Unique identification shared between the PISP and the ASPSP
         ///Identification of the financial institution where the debtor account is held. To be provided only in case the financial institution can not be unambiguously identified the ASPSP name towards which the payment is initiated.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_agent: ::std::option::Option<FinancialInstitutionIdentification>,
-        ///ISO 4217 code, in which debtor account is held
-        #[serde(default = "defaults::payment_request_resource_details_debtor_currency")]
+        ///ISO 4217 code, in which debtor account is held The API applies `XXX` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_currency: ::std::option::Option<::std::string::String>,
         ///Reference assigned by a sending party to unambiguously identify the payment information block within the message
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1087,21 +1087,6 @@ API: Unique identification shared between the PISP and the ASPSP
         ///Underlying reason for the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub purpose: ::std::option::Option<crate::types::PurposeCode>,
-    }
-    impl ::std::default::Default for PaymentRequestResourceDetails {
-        fn default() -> Self {
-            Self {
-                charge_bearer: Default::default(),
-                credit_transfer_transaction: Default::default(),
-                debtor: Default::default(),
-                debtor_account: Default::default(),
-                debtor_agent: Default::default(),
-                debtor_currency: defaults::payment_request_resource_details_debtor_currency(),
-                payment_information_id: Default::default(),
-                payment_type_information: Default::default(),
-                purpose: Default::default(),
-            }
-        }
     }
     impl PaymentRequestResourceDetails {
         pub fn builder() -> builder::PaymentRequestResourceDetails {
@@ -1524,57 +1509,45 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub creditor_account_schemas: ::std::option::Option<
             ::std::vec::Vec<crate::types::SchemeName>,
         >,
-        ///States if creditor agent bicFi is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.bic_fi`
-        #[serde(
-            default = "defaults::response_payment_type_creditor_agent_bic_fi_required"
-        )]
+        ///States if creditor agent bicFi is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.bic_fi` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_agent_bic_fi_required: ::std::option::Option<bool>,
-        ///States if creditor agent clearing system member ID is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.clearing_system_member_id`
-        #[serde(
-            default = "defaults::response_payment_type_creditor_agent_clearing_system_member_id_required"
-        )]
+        ///States if creditor agent clearing system member ID is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.clearing_system_member_id` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_agent_clearing_system_member_id_required: ::std::option::Option<
             bool,
         >,
-        ///States if creditor country is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country`
-        #[serde(default = "defaults::response_payment_type_creditor_country_required")]
+        ///States if creditor country is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_country_required: ::std::option::Option<bool>,
-        ///States if creditor name is required.  Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country`
-        #[serde(default = "defaults::response_payment_type_creditor_name_required")]
+        ///States if creditor name is required.  Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address.country` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_name_required: ::std::option::Option<bool>,
-        ///States if creditor postal address is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address`
-        #[serde(
-            default = "defaults::response_payment_type_creditor_postal_address_required"
-        )]
+        ///States if creditor postal address is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor.postal_address` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor_postal_address_required: ::std::option::Option<bool>,
         ///List of supported currencies
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub currencies: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
-        ///States if debtor account is required for payment initiation request. When the debtor account is not provided it is to be chosen by the PSU during payment authorisation flow. Create payment body field: `payment_request.debtor_account`
-        #[serde(default = "defaults::response_payment_type_debtor_account_required")]
+        ///States if debtor account is required for payment initiation request. When the debtor account is not provided it is to be chosen by the PSU during payment authorisation flow. Create payment body field: `payment_request.debtor_account` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_account_required: ::std::option::Option<bool>,
         ///List of supported debtor account schemas
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_account_schemas: ::std::option::Option<
             ::std::vec::Vec<crate::types::SchemeName>,
         >,
-        ///States if debtor's contact email is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.email_address`
-        #[serde(
-            default = "defaults::response_payment_type_debtor_contact_email_required"
-        )]
+        ///States if debtor's contact email is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.email_address` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_contact_email_required: ::std::option::Option<bool>,
-        ///States if debtor's contact phone is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.phone_number`
-        #[serde(
-            default = "defaults::response_payment_type_debtor_contact_phone_required"
-        )]
+        ///States if debtor's contact phone is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.phone_number` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_contact_phone_required: ::std::option::Option<bool>,
-        ///States if debtor currency is required. Create payment body field: `payment_request.debtor_currency`
-        #[serde(default = "defaults::response_payment_type_debtor_currency_required")]
+        ///States if debtor currency is required. Create payment body field: `payment_request.debtor_currency` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub debtor_currency_required: ::std::option::Option<bool>,
-        ///Indicates whether this payment type supports deferred submission for execution. When true, the automatic submission of the payment for execution after PSU authorization can be deferred — the client must call POST /payments/{payment_id}/submit to explicitly submit the payment for execution.
-        #[serde(
-            default = "defaults::response_payment_type_deferred_submission_supported"
-        )]
+        ///Indicates whether this payment type supports deferred submission for execution. When true, the automatic submission of the payment for execution after PSU authorization can be deferred — the client must call POST /payments/{payment_id}/submit to explicitly submit the payment for execution. The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub deferred_submission_supported: ::std::option::Option<bool>,
         ///List of the final successful statuses for the payment type. Please note that when a payment reaches one of the statuses provided in this list, it is not yet guaranteed that the funds will be credited to the creditor's account specified in the payment request. It is up to the application that created the payment to conclude whether the funds are (or will be) received, depending on the actual payment status and other factors.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1596,13 +1569,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub reference_number_schemas: ::std::option::Option<
             ::std::vec::Vec<crate::types::ReferenceNumberScheme>,
         >,
-        ///States if reference number can be provided for credit transfer transactions
-        #[serde(default = "defaults::response_payment_type_reference_number_supported")]
+        ///States if reference number can be provided for credit transfer transactions The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number_supported: ::std::option::Option<bool>,
-        ///States if regulatory reporting shall be provided for credit transfer transactions. Create payment body field: `payment_request.credit_transfer_transaction[*].regulatory_reporting.details.code`
-        #[serde(
-            default = "defaults::response_payment_type_regulatory_reporting_code_required"
-        )]
+        ///States if regulatory reporting shall be provided for credit transfer transactions. Create payment body field: `payment_request.credit_transfer_transaction[*].regulatory_reporting.details.code` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub regulatory_reporting_code_required: ::std::option::Option<bool>,
         ///List of supported codes for regulatory reporting details
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1614,23 +1585,17 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub remittance_information_lines: ::std::option::Option<
             ::std::vec::Vec<RemittanceInformationLineInfo>,
         >,
-        ///States if remittance information is required. Create payment body field: `payment_request.credit_transfer_transaction[*].remittance_information`
-        #[serde(
-            default = "defaults::response_payment_type_remittance_information_required"
-        )]
+        ///States if remittance information is required. Create payment body field: `payment_request.credit_transfer_transaction[*].remittance_information` The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub remittance_information_required: ::std::option::Option<bool>,
-        ///States if both reference number and remittance information can be provided simultaneously
-        #[serde(
-            default = "defaults::response_payment_type_remittance_reference_supported"
-        )]
+        ///States if both reference number and remittance information can be provided simultaneously The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub remittance_reference_supported: ::std::option::Option<bool>,
         ///Maximum requested execution date interval in the future
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub requested_execution_date_max_period: ::std::option::Option<i64>,
-        ///States if requested execution date supported by a payment method
-        #[serde(
-            default = "defaults::response_payment_type_requested_execution_date_supported"
-        )]
+        ///States if requested execution date supported by a payment method The API applies `false` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub requested_execution_date_supported: ::std::option::Option<bool>,
     }
     impl ResponsePaymentType {
@@ -1696,10 +1661,8 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub credentials: ::std::option::Option<
             ::serde_json::Map<::std::string::String, ::serde_json::Value>,
         >,
-        ///Controls whether user credentials will be autosubmitted (if passed). If set to `false` then credentials form will be prefilled with passed credentials
-        #[serde(
-            default = "defaults::start_authorization_request_credentials_autosubmit"
-        )]
+        ///Controls whether user credentials will be autosubmitted (if passed). If set to `false` then credentials form will be prefilled with passed credentials The API applies `true` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub credentials_autosubmit: ::std::option::Option<bool>,
         ///Preferred PSU language. Two-letter lowercase language code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1766,18 +1729,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         }
     }
     ///`SuccessResponse`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct SuccessResponse {
-        ///Returns "OK" in case of successful request
-        #[serde(default = "defaults::success_response_message")]
+        ///Returns "OK" in case of successful request The API applies `OK` when it is left out.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub message: ::std::option::Option<::std::string::String>,
-    }
-    impl ::std::default::Default for SuccessResponse {
-        fn default() -> Self {
-            Self {
-                message: defaults::success_response_message(),
-            }
-        }
     }
     impl SuccessResponse {
         pub fn builder() -> builder::SuccessResponse {
@@ -2028,8 +1984,8 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             fn default() -> Self {
                 Self {
                     accounts: Ok(Default::default()),
-                    balances: Ok(super::defaults::access_balances()),
-                    transactions: Ok(super::defaults::access_transactions()),
+                    balances: Ok(Default::default()),
+                    transactions: Ok(Default::default()),
                     valid_until: Err("no value supplied for valid_until".to_string()),
                 }
             }
@@ -3721,9 +3677,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     aspsp: Err("no value supplied for aspsp".to_string()),
                     auth_method: Ok(Default::default()),
                     credentials: Ok(Default::default()),
-                    defer_submission: Ok(
-                        super::defaults::create_payment_request_defer_submission(),
-                    ),
+                    defer_submission: Ok(Default::default()),
                     language: Ok(Default::default()),
                     payment_request: Err(
                         "no value supplied for payment_request".to_string(),
@@ -6200,9 +6154,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     debtor: Ok(Default::default()),
                     debtor_account: Ok(Default::default()),
                     debtor_agent: Ok(Default::default()),
-                    debtor_currency: Ok(
-                        super::defaults::payment_request_resource_debtor_currency(),
-                    ),
+                    debtor_currency: Ok(Default::default()),
                     payment_information_id: Ok(Default::default()),
                     payment_type_information: Ok(Default::default()),
                     purpose: Ok(Default::default()),
@@ -6429,9 +6381,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     debtor: Ok(Default::default()),
                     debtor_account: Ok(Default::default()),
                     debtor_agent: Ok(Default::default()),
-                    debtor_currency: Ok(
-                        super::defaults::payment_request_resource_details_debtor_currency(),
-                    ),
+                    debtor_currency: Ok(Default::default()),
                     payment_information_id: Ok(Default::default()),
                     payment_type_information: Ok(Default::default()),
                     purpose: Ok(Default::default()),
@@ -7441,62 +7391,34 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     allowed_auth_methods: Ok(Default::default()),
                     charge_bearer_values: Ok(Default::default()),
                     creditor_account_schemas: Ok(Default::default()),
-                    creditor_agent_bic_fi_required: Ok(
-                        super::defaults::response_payment_type_creditor_agent_bic_fi_required(),
-                    ),
+                    creditor_agent_bic_fi_required: Ok(Default::default()),
                     creditor_agent_clearing_system_member_id_required: Ok(
-                        super::defaults::response_payment_type_creditor_agent_clearing_system_member_id_required(),
+                        Default::default(),
                     ),
-                    creditor_country_required: Ok(
-                        super::defaults::response_payment_type_creditor_country_required(),
-                    ),
-                    creditor_name_required: Ok(
-                        super::defaults::response_payment_type_creditor_name_required(),
-                    ),
-                    creditor_postal_address_required: Ok(
-                        super::defaults::response_payment_type_creditor_postal_address_required(),
-                    ),
+                    creditor_country_required: Ok(Default::default()),
+                    creditor_name_required: Ok(Default::default()),
+                    creditor_postal_address_required: Ok(Default::default()),
                     currencies: Ok(Default::default()),
-                    debtor_account_required: Ok(
-                        super::defaults::response_payment_type_debtor_account_required(),
-                    ),
+                    debtor_account_required: Ok(Default::default()),
                     debtor_account_schemas: Ok(Default::default()),
-                    debtor_contact_email_required: Ok(
-                        super::defaults::response_payment_type_debtor_contact_email_required(),
-                    ),
-                    debtor_contact_phone_required: Ok(
-                        super::defaults::response_payment_type_debtor_contact_phone_required(),
-                    ),
-                    debtor_currency_required: Ok(
-                        super::defaults::response_payment_type_debtor_currency_required(),
-                    ),
-                    deferred_submission_supported: Ok(
-                        super::defaults::response_payment_type_deferred_submission_supported(),
-                    ),
+                    debtor_contact_email_required: Ok(Default::default()),
+                    debtor_contact_phone_required: Ok(Default::default()),
+                    debtor_currency_required: Ok(Default::default()),
+                    deferred_submission_supported: Ok(Default::default()),
                     final_successful_statuses: Ok(Default::default()),
                     max_transactions: Ok(Default::default()),
                     payment_type: Err("no value supplied for payment_type".to_string()),
                     priority_codes: Ok(Default::default()),
                     psu_type: Err("no value supplied for psu_type".to_string()),
                     reference_number_schemas: Ok(Default::default()),
-                    reference_number_supported: Ok(
-                        super::defaults::response_payment_type_reference_number_supported(),
-                    ),
-                    regulatory_reporting_code_required: Ok(
-                        super::defaults::response_payment_type_regulatory_reporting_code_required(),
-                    ),
+                    reference_number_supported: Ok(Default::default()),
+                    regulatory_reporting_code_required: Ok(Default::default()),
                     regulatory_reporting_codes: Ok(Default::default()),
                     remittance_information_lines: Ok(Default::default()),
-                    remittance_information_required: Ok(
-                        super::defaults::response_payment_type_remittance_information_required(),
-                    ),
-                    remittance_reference_supported: Ok(
-                        super::defaults::response_payment_type_remittance_reference_supported(),
-                    ),
+                    remittance_information_required: Ok(Default::default()),
+                    remittance_reference_supported: Ok(Default::default()),
                     requested_execution_date_max_period: Ok(Default::default()),
-                    requested_execution_date_supported: Ok(
-                        super::defaults::response_payment_type_requested_execution_date_supported(),
-                    ),
+                    requested_execution_date_supported: Ok(Default::default()),
                 }
             }
         }
@@ -8294,9 +8216,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     aspsp: Err("no value supplied for aspsp".to_string()),
                     auth_method: Ok(Default::default()),
                     credentials: Ok(Default::default()),
-                    credentials_autosubmit: Ok(
-                        super::defaults::start_authorization_request_credentials_autosubmit(),
-                    ),
+                    credentials_autosubmit: Ok(Default::default()),
                     language: Ok(Default::default()),
                     psu_id: Ok(Default::default()),
                     psu_type: Ok(Default::default()),
@@ -8739,7 +8659,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         impl ::std::default::Default for SuccessResponse {
             fn default() -> Self {
                 Self {
-                    message: Ok(super::defaults::success_response_message()),
+                    message: Ok(Default::default()),
                 }
             }
         }
@@ -9321,115 +9241,6 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                     value_date: Ok(value.value_date),
                 }
             }
-        }
-    }
-    /// Generation of default values for serde.
-    pub mod defaults {
-        pub(super) fn access_balances() -> ::std::option::Option<bool> {
-            ::std::option::Option::Some(true)
-        }
-        pub(super) fn access_transactions() -> ::std::option::Option<bool> {
-            ::std::option::Option::Some(true)
-        }
-        pub(super) fn create_payment_request_defer_submission() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn payment_request_resource_debtor_currency() -> ::std::option::Option<
-            ::std::string::String,
-        > {
-            ::std::option::Option::Some("XXX".to_string())
-        }
-        pub(super) fn payment_request_resource_details_debtor_currency() -> ::std::option::Option<
-            ::std::string::String,
-        > {
-            ::std::option::Option::Some("XXX".to_string())
-        }
-        pub(super) fn response_payment_type_creditor_agent_bic_fi_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_creditor_agent_clearing_system_member_id_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_creditor_country_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_creditor_name_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_creditor_postal_address_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_debtor_account_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_debtor_contact_email_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_debtor_contact_phone_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_debtor_currency_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_deferred_submission_supported() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_reference_number_supported() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_regulatory_reporting_code_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_remittance_information_required() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_remittance_reference_supported() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn response_payment_type_requested_execution_date_supported() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(false)
-        }
-        pub(super) fn start_authorization_request_credentials_autosubmit() -> ::std::option::Option<
-            bool,
-        > {
-            ::std::option::Option::Some(true)
-        }
-        pub(super) fn success_response_message() -> ::std::option::Option<
-            ::std::string::String,
-        > {
-            ::std::option::Option::Some("OK".to_string())
         }
     }
     /// Error types.

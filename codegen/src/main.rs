@@ -396,6 +396,9 @@ fn nullable_optionals(object: &mut Map<String, Value>) {
         let Value::Object(schema) = schema else {
             continue;
         };
+        if let Some(default) = schema.remove("default") {
+            describe_removed_default(schema, default);
+        }
         if let Some(reference) = schema.remove("$ref") {
             // A `$ref` ignores its siblings in OpenAPI 3.0, so the reference moves into an `allOf` that can carry `nullable`.
             schema.insert(
@@ -404,6 +407,33 @@ fn nullable_optionals(object: &mut Map<String, Value>) {
             );
         }
         schema.insert("nullable".to_owned(), Value::Bool(true));
+    }
+}
+
+/// A `default` on an optional property makes typify emit the value on a `None` field, which the API
+/// rejects. Removing it keeps the field out of request bodies, so the description states the value
+/// the API applies when the field is absent.
+fn describe_removed_default(schema: &mut Map<String, Value>, default: Value) {
+    let sentence = format!(
+        "The API applies `{}` when it is left out.",
+        readable(default)
+    );
+    let existing = schema
+        .get("description")
+        .and_then(Value::as_str)
+        .map(str::to_owned);
+    let description = match existing {
+        Some(existing) => format!("{existing} {sentence}"),
+        None => sentence,
+    };
+    schema.insert("description".to_owned(), Value::String(description));
+}
+
+/// The value for the sentence in [`describe_removed_default`], with strings shown without their JSON quotes.
+fn readable(default: Value) -> String {
+    match default {
+        Value::String(text) => text,
+        other => other.to_string(),
     }
 }
 
@@ -621,6 +651,46 @@ mod tests {
         assert_eq!(
             properties["if"],
             json!({"type": "integer", "nullable": true})
+        );
+    }
+
+    #[test]
+    fn a_default_on_an_optional_property_moves_into_the_description() {
+        let mut spec = json!({
+            "openapi": "3.1.0",
+            "components": {"schemas": {"Consent": {
+                "type": "object",
+                "required": ["valid_until"],
+                "properties": {
+                    "valid_until": {"type": "string"},
+                    "balances": {"type": "boolean", "description": "Request balances", "default": true},
+                    "currency": {"type": "string", "default": "XXX"},
+                    "name": {"type": "string"},
+                },
+            }}},
+        });
+        lower(&mut spec).unwrap();
+        let properties = &spec["components"]["schemas"]["Consent"]["properties"];
+        assert_eq!(properties["valid_until"], json!({"type": "string"}));
+        assert_eq!(
+            properties["balances"],
+            json!({
+                "type": "boolean",
+                "description": "Request balances The API applies `true` when it is left out.",
+                "nullable": true
+            })
+        );
+        assert_eq!(
+            properties["currency"],
+            json!({
+                "type": "string",
+                "description": "The API applies `XXX` when it is left out.",
+                "nullable": true
+            })
+        );
+        assert_eq!(
+            properties["name"],
+            json!({"type": "string", "nullable": true})
         );
     }
 
