@@ -308,8 +308,10 @@ dependencies = [
 name = "codegen"
 version = "0.0.0"
 dependencies = [
+ "heck",
  "openapiv3",
  "prettyplease",
+ "proc-macro2",
  "progenitor-impl",
  "quote",
  "schemars",

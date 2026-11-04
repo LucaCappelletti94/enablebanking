@@ -54,7 +54,7 @@ async fn transactions(client: &Client, code: &str) -> Result<(), Box<dyn std::er
         .send()
         .await?;
     for account in session.accounts.iter().filter_map(|account| account.uid) {
-        for transaction in client.all_transactions(account, None, None).await? {
+        for transaction in client.all_transactions(account, |request| request).await? {
             println!(
                 "{:?} {} {:?}",
                 transaction.booking_date,
@@ -67,6 +67,6 @@ async fn transactions(client: &Client, code: &str) -> Result<(), Box<dyn std::er
 }
 ```
 
-Every endpoint is a method named after the API, with optional parameters as builder calls. Amounts are `rust_decimal::Decimal` and dates are `jiff` types.
+Every endpoint is a method named after the API, with optional parameters as builder calls. Amounts are `rust_decimal::Decimal`, dates are `jiff` types, and enumerations keep codes the description does not list as `Unknown`. `Client::new` gives up on a request after 15 seconds, so slower banks need a `reqwest::Client` of your own through `Client::new_with_client`.
 
-A weekly job regenerates the client when Enable Banking updates the description, and another calls every endpoint against their sandbox. Optional fields are nullable, because the API sends `null` for them.
+A weekly job regenerates the client when Enable Banking updates the description, and another calls every endpoint against their sandbox. Optional fields are nullable, because the API sends `null` for them. Until 1.0, a release that follows a changed description is a new minor version.

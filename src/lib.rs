@@ -26,7 +26,6 @@ mod generated;
 
 use std::fmt;
 
-use jiff::civil::Date;
 use progenitor_client::{ClientHooks, OperationInfo};
 use reqwest::header::{AUTHORIZATION, HeaderValue};
 use rust_decimal::Decimal;
@@ -81,9 +80,23 @@ impl ClientHooks<Signer> for Client {
 }
 
 impl Client {
-    /// Every transaction of account `account_id` booked from `date_from` to `date_to`, following continuation keys across pages.
+    /// Every transaction of account `account_id`, following continuation keys across pages.
     ///
-    /// Without dates the bank picks the range, often the last 90 days.
+    /// `configure` sets the query and the PSU headers of each page request, such as a date range, a fetch strategy or the user's IP address. The bank picks the range when no dates are set, often the last 90 days.
+    ///
+    /// ```
+    /// # async fn october(client: &enablebanking::Client, account: uuid::Uuid) -> Result<(), Box<dyn std::error::Error>> {
+    /// let october = client
+    ///     .all_transactions(account, |request| {
+    ///         request
+    ///             .date_from(jiff::civil::date(2026, 10, 1))
+    ///             .date_to(jiff::civil::date(2026, 10, 31))
+    ///             .psu_ip_address("203.0.113.7")
+    ///     })
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     ///
     /// # Errors
     ///
@@ -92,22 +105,15 @@ impl Client {
         clippy::result_large_err,
         reason = "the same error type every generated method returns"
     )]
-    pub async fn all_transactions(
-        &self,
+    pub async fn all_transactions<'a>(
+        &'a self,
         account_id: Uuid,
-        date_from: Option<Date>,
-        date_to: Option<Date>,
+        configure: impl Fn(builder::GetAccountTransactions<'a>) -> builder::GetAccountTransactions<'a>,
     ) -> Result<Vec<types::Transaction>, Error<types::ErrorResponse>> {
         let mut transactions = Vec::new();
         let mut continuation_key: Option<String> = None;
         loop {
-            let mut request = self.get_account_transactions().account_id(account_id);
-            if let Some(date) = date_from {
-                request = request.date_from(date);
-            }
-            if let Some(date) = date_to {
-                request = request.date_to(date);
-            }
+            let mut request = configure(self.get_account_transactions().account_id(account_id));
             if let Some(key) = continuation_key.take() {
                 request = request.continuation_key(key);
             }

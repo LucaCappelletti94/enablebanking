@@ -69,7 +69,7 @@ ASPSP's side, the session will expire based on the initially provided value.*/
         pub all_account_ids: ::std::option::Option<
             ::std::vec::Vec<GenericIdentification>,
         >,
-        pub cash_account_type: CashAccountType,
+        pub cash_account_type: crate::types::CashAccountType,
         ///Specifies the maximum credit or overdraft allowed on the account
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub credit_limit: ::std::option::Option<crate::Amount>,
@@ -105,83 +105,11 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub uid: ::std::option::Option<::uuid::Uuid>,
         ///Specifies the usage of the account
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub usage: ::std::option::Option<Usage>,
+        pub usage: ::std::option::Option<crate::types::Usage>,
     }
     impl AccountResource {
         pub fn builder() -> builder::AccountResource {
             Default::default()
-        }
-    }
-    ///`AddressType`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum AddressType {
-        Business,
-        Correspondence,
-        DeliveryTo,
-        MailTo,
-        #[serde(rename = "POBox")]
-        PoBox,
-        Postal,
-        Residential,
-        Statement,
-    }
-    impl ::std::fmt::Display for AddressType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Business => f.write_str("Business"),
-                Self::Correspondence => f.write_str("Correspondence"),
-                Self::DeliveryTo => f.write_str("DeliveryTo"),
-                Self::MailTo => f.write_str("MailTo"),
-                Self::PoBox => f.write_str("POBox"),
-                Self::Postal => f.write_str("Postal"),
-                Self::Residential => f.write_str("Residential"),
-                Self::Statement => f.write_str("Statement"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for AddressType {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Business" => Ok(Self::Business),
-                "Correspondence" => Ok(Self::Correspondence),
-                "DeliveryTo" => Ok(Self::DeliveryTo),
-                "MailTo" => Ok(Self::MailTo),
-                "POBox" => Ok(Self::PoBox),
-                "Postal" => Ok(Self::Postal),
-                "Residential" => Ok(Self::Residential),
-                "Statement" => Ok(Self::Statement),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for AddressType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for AddressType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`Aspsp`
@@ -222,7 +150,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub payments: ::std::option::Option<::std::vec::Vec<ResponsePaymentType>>,
         ///List of PSU types supported by ASPSP
-        pub psu_types: ::std::vec::Vec<PsuType>,
+        pub psu_types: ::std::vec::Vec<crate::types::PsuType>,
         ///List of the headers required to indicate to data retrieval endpoints that PSU is online. Either all required PSU headers or none of PSU headers are to be provided, otherwise PSU_HEADER_NOT_PROVIDED error will be returned.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub required_psu_headers: ::std::option::Option<
@@ -253,7 +181,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
     ///`AuthMethod`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct AuthMethod {
-        pub approach: AuthenticationApproach,
+        pub approach: crate::types::AuthenticationApproach,
         ///List of credentials which are possible to supply while initiating authorization
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub credentials: ::std::option::Option<::std::vec::Vec<Credential>>,
@@ -262,7 +190,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///Internal name of the authentication method
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub name: ::std::option::Option<::std::string::String>,
-        pub psu_type: PsuType,
+        pub psu_type: crate::types::PsuType,
         ///Human-readable title of the authentication method
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub title: ::std::option::Option<::std::string::String>,
@@ -270,65 +198,6 @@ null (or the field is not set) if it is not possible to determine whether the ac
     impl AuthMethod {
         pub fn builder() -> builder::AuthMethod {
             Default::default()
-        }
-    }
-    ///`AuthenticationApproach`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum AuthenticationApproach {
-        #[serde(rename = "REDIRECT")]
-        Redirect,
-        #[serde(rename = "DECOUPLED")]
-        Decoupled,
-        #[serde(rename = "EMBEDDED")]
-        Embedded,
-    }
-    impl ::std::fmt::Display for AuthenticationApproach {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Redirect => f.write_str("REDIRECT"),
-                Self::Decoupled => f.write_str("DECOUPLED"),
-                Self::Embedded => f.write_str("EMBEDDED"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for AuthenticationApproach {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "REDIRECT" => Ok(Self::Redirect),
-                "DECOUPLED" => Ok(Self::Decoupled),
-                "EMBEDDED" => Ok(Self::Embedded),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for AuthenticationApproach {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for AuthenticationApproach {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`AuthorizeSessionRequest`
@@ -349,7 +218,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         ///List of authorized accounts
         pub accounts: ::std::vec::Vec<AccountResource>,
         pub aspsp: Aspsp,
-        pub psu_type: PsuType,
+        pub psu_type: crate::types::PsuType,
         ///ID of the PSU session
         pub session_id: ::std::string::String,
     }
@@ -362,7 +231,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct BalanceResource {
         pub balance_amount: crate::Amount,
-        pub balance_type: BalanceStatus,
+        pub balance_type: crate::types::BalanceStatus,
         ///Timestamp of the last change of the balance amount
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub last_change_date_time: ::std::option::Option<::jiff::Timestamp>,
@@ -378,101 +247,6 @@ null (or the field is not set) if it is not possible to determine whether the ac
     impl BalanceResource {
         pub fn builder() -> builder::BalanceResource {
             Default::default()
-        }
-    }
-    ///`BalanceStatus`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum BalanceStatus {
-        #[serde(rename = "CLAV")]
-        Clav,
-        #[serde(rename = "CLBD")]
-        Clbd,
-        #[serde(rename = "FWAV")]
-        Fwav,
-        #[serde(rename = "INFO")]
-        Info,
-        #[serde(rename = "ITAV")]
-        Itav,
-        #[serde(rename = "ITBD")]
-        Itbd,
-        #[serde(rename = "OPAV")]
-        Opav,
-        #[serde(rename = "OPBD")]
-        Opbd,
-        #[serde(rename = "PRCD")]
-        Prcd,
-        #[serde(rename = "OTHR")]
-        Othr,
-        #[serde(rename = "VALU")]
-        Valu,
-        #[serde(rename = "XPCD")]
-        Xpcd,
-    }
-    impl ::std::fmt::Display for BalanceStatus {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Clav => f.write_str("CLAV"),
-                Self::Clbd => f.write_str("CLBD"),
-                Self::Fwav => f.write_str("FWAV"),
-                Self::Info => f.write_str("INFO"),
-                Self::Itav => f.write_str("ITAV"),
-                Self::Itbd => f.write_str("ITBD"),
-                Self::Opav => f.write_str("OPAV"),
-                Self::Opbd => f.write_str("OPBD"),
-                Self::Prcd => f.write_str("PRCD"),
-                Self::Othr => f.write_str("OTHR"),
-                Self::Valu => f.write_str("VALU"),
-                Self::Xpcd => f.write_str("XPCD"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for BalanceStatus {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CLAV" => Ok(Self::Clav),
-                "CLBD" => Ok(Self::Clbd),
-                "FWAV" => Ok(Self::Fwav),
-                "INFO" => Ok(Self::Info),
-                "ITAV" => Ok(Self::Itav),
-                "ITBD" => Ok(Self::Itbd),
-                "OPAV" => Ok(Self::Opav),
-                "OPBD" => Ok(Self::Opbd),
-                "PRCD" => Ok(Self::Prcd),
-                "OTHR" => Ok(Self::Othr),
-                "VALU" => Ok(Self::Valu),
-                "XPCD" => Ok(Self::Xpcd),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for BalanceStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for BalanceStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`BankTransactionCode`
@@ -510,319 +284,6 @@ null (or the field is not set) if it is not possible to determine whether the ac
     impl Beneficiary {
         pub fn builder() -> builder::Beneficiary {
             Default::default()
-        }
-    }
-    ///`CashAccountType`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum CashAccountType {
-        #[serde(rename = "CACC")]
-        Cacc,
-        #[serde(rename = "CASH")]
-        Cash,
-        #[serde(rename = "CARD")]
-        Card,
-        #[serde(rename = "LOAN")]
-        Loan,
-        #[serde(rename = "SVGS")]
-        Svgs,
-        #[serde(rename = "OTHR")]
-        Othr,
-    }
-    impl ::std::fmt::Display for CashAccountType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Cacc => f.write_str("CACC"),
-                Self::Cash => f.write_str("CASH"),
-                Self::Card => f.write_str("CARD"),
-                Self::Loan => f.write_str("LOAN"),
-                Self::Svgs => f.write_str("SVGS"),
-                Self::Othr => f.write_str("OTHR"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CashAccountType {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CACC" => Ok(Self::Cacc),
-                "CASH" => Ok(Self::Cash),
-                "CARD" => Ok(Self::Card),
-                "LOAN" => Ok(Self::Loan),
-                "SVGS" => Ok(Self::Svgs),
-                "OTHR" => Ok(Self::Othr),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CashAccountType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CashAccountType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CategoryPurposeCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum CategoryPurposeCode {
-        #[serde(rename = "BONU")]
-        Bonu,
-        #[serde(rename = "CASH")]
-        Cash,
-        #[serde(rename = "CBLK")]
-        Cblk,
-        #[serde(rename = "CCRD")]
-        Ccrd,
-        #[serde(rename = "CORT")]
-        Cort,
-        #[serde(rename = "DCRD")]
-        Dcrd,
-        #[serde(rename = "DIVI")]
-        Divi,
-        #[serde(rename = "DVPM")]
-        Dvpm,
-        #[serde(rename = "EPAY")]
-        Epay,
-        #[serde(rename = "FCOL")]
-        Fcol,
-        #[serde(rename = "GOVT")]
-        Govt,
-        #[serde(rename = "HEDG")]
-        Hedg,
-        #[serde(rename = "ICCP")]
-        Iccp,
-        #[serde(rename = "IDCP")]
-        Idcp,
-        #[serde(rename = "INTC")]
-        Intc,
-        #[serde(rename = "INTE")]
-        Inte,
-        #[serde(rename = "LOAN")]
-        Loan,
-        #[serde(rename = "MP2B")]
-        Mp2b,
-        #[serde(rename = "MP2P")]
-        Mp2p,
-        #[serde(rename = "OTHR")]
-        Othr,
-        #[serde(rename = "PENS")]
-        Pens,
-        #[serde(rename = "RPRE")]
-        Rpre,
-        #[serde(rename = "RRCT")]
-        Rrct,
-        #[serde(rename = "RVPM")]
-        Rvpm,
-        #[serde(rename = "SALA")]
-        Sala,
-        #[serde(rename = "SECU")]
-        Secu,
-        #[serde(rename = "SSBE")]
-        Ssbe,
-        #[serde(rename = "SUPP")]
-        Supp,
-        #[serde(rename = "TAXS")]
-        Taxs,
-        #[serde(rename = "TRAD")]
-        Trad,
-        #[serde(rename = "TREA")]
-        Trea,
-        #[serde(rename = "VATX")]
-        Vatx,
-        #[serde(rename = "WHLD")]
-        Whld,
-    }
-    impl ::std::fmt::Display for CategoryPurposeCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bonu => f.write_str("BONU"),
-                Self::Cash => f.write_str("CASH"),
-                Self::Cblk => f.write_str("CBLK"),
-                Self::Ccrd => f.write_str("CCRD"),
-                Self::Cort => f.write_str("CORT"),
-                Self::Dcrd => f.write_str("DCRD"),
-                Self::Divi => f.write_str("DIVI"),
-                Self::Dvpm => f.write_str("DVPM"),
-                Self::Epay => f.write_str("EPAY"),
-                Self::Fcol => f.write_str("FCOL"),
-                Self::Govt => f.write_str("GOVT"),
-                Self::Hedg => f.write_str("HEDG"),
-                Self::Iccp => f.write_str("ICCP"),
-                Self::Idcp => f.write_str("IDCP"),
-                Self::Intc => f.write_str("INTC"),
-                Self::Inte => f.write_str("INTE"),
-                Self::Loan => f.write_str("LOAN"),
-                Self::Mp2b => f.write_str("MP2B"),
-                Self::Mp2p => f.write_str("MP2P"),
-                Self::Othr => f.write_str("OTHR"),
-                Self::Pens => f.write_str("PENS"),
-                Self::Rpre => f.write_str("RPRE"),
-                Self::Rrct => f.write_str("RRCT"),
-                Self::Rvpm => f.write_str("RVPM"),
-                Self::Sala => f.write_str("SALA"),
-                Self::Secu => f.write_str("SECU"),
-                Self::Ssbe => f.write_str("SSBE"),
-                Self::Supp => f.write_str("SUPP"),
-                Self::Taxs => f.write_str("TAXS"),
-                Self::Trad => f.write_str("TRAD"),
-                Self::Trea => f.write_str("TREA"),
-                Self::Vatx => f.write_str("VATX"),
-                Self::Whld => f.write_str("WHLD"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CategoryPurposeCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "BONU" => Ok(Self::Bonu),
-                "CASH" => Ok(Self::Cash),
-                "CBLK" => Ok(Self::Cblk),
-                "CCRD" => Ok(Self::Ccrd),
-                "CORT" => Ok(Self::Cort),
-                "DCRD" => Ok(Self::Dcrd),
-                "DIVI" => Ok(Self::Divi),
-                "DVPM" => Ok(Self::Dvpm),
-                "EPAY" => Ok(Self::Epay),
-                "FCOL" => Ok(Self::Fcol),
-                "GOVT" => Ok(Self::Govt),
-                "HEDG" => Ok(Self::Hedg),
-                "ICCP" => Ok(Self::Iccp),
-                "IDCP" => Ok(Self::Idcp),
-                "INTC" => Ok(Self::Intc),
-                "INTE" => Ok(Self::Inte),
-                "LOAN" => Ok(Self::Loan),
-                "MP2B" => Ok(Self::Mp2b),
-                "MP2P" => Ok(Self::Mp2p),
-                "OTHR" => Ok(Self::Othr),
-                "PENS" => Ok(Self::Pens),
-                "RPRE" => Ok(Self::Rpre),
-                "RRCT" => Ok(Self::Rrct),
-                "RVPM" => Ok(Self::Rvpm),
-                "SALA" => Ok(Self::Sala),
-                "SECU" => Ok(Self::Secu),
-                "SSBE" => Ok(Self::Ssbe),
-                "SUPP" => Ok(Self::Supp),
-                "TAXS" => Ok(Self::Taxs),
-                "TRAD" => Ok(Self::Trad),
-                "TREA" => Ok(Self::Trea),
-                "VATX" => Ok(Self::Vatx),
-                "WHLD" => Ok(Self::Whld),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CategoryPurposeCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CategoryPurposeCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`ChargeBearerCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum ChargeBearerCode {
-        #[serde(rename = "SLEV")]
-        Slev,
-        #[serde(rename = "SHAR")]
-        Shar,
-        #[serde(rename = "DEBT")]
-        Debt,
-        #[serde(rename = "CRED")]
-        Cred,
-    }
-    impl ::std::fmt::Display for ChargeBearerCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Slev => f.write_str("SLEV"),
-                Self::Shar => f.write_str("SHAR"),
-                Self::Debt => f.write_str("DEBT"),
-                Self::Cred => f.write_str("CRED"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ChargeBearerCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SLEV" => Ok(Self::Slev),
-                "SHAR" => Ok(Self::Shar),
-                "DEBT" => Ok(Self::Debt),
-                "CRED" => Ok(Self::Cred),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ChargeBearerCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ChargeBearerCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`ClearingSystemMemberIdentification`
@@ -930,11 +391,11 @@ null (or the field is not set) if it is not possible to determine whether the ac
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub language: ::std::option::Option<Language>,
         pub payment_request: PaymentRequestResource,
-        pub payment_type: PaymentType,
+        pub payment_type: crate::types::PaymentType,
         ///Unique identification of a PSU used by the client application. It can be used to match payments of the same user. Although only hashed value is stored, it is recommended to use anonymised identifiers (i.e. digital ID instead of email or social security number). In case the parameter is not passed by the application, random value will be used.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub psu_id: ::std::option::Option<::std::string::String>,
-        pub psu_type: PsuType,
+        pub psu_type: crate::types::PsuType,
         ///URL that PSU will be redirected to after authorization
         pub redirect_url: RedirectUrl,
         ///Arbitrary string. Same string will be returned in query parameter when redirecting to the URL passed via redirect_url parameter
@@ -955,7 +416,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub payment_id: ::uuid::Uuid,
         ///Hashed unique identification of a PSU used by the client application. In case PSU ID is not passed by the client application, the hash is calculated based on a random value. The hash also inherits the application ID, so different hashes will be calculated when using the same PSU ID with different applications.
         pub psu_id_hash: ::std::string::String,
-        pub status: PaymentStatus,
+        pub status: crate::types::PaymentStatus,
         ///URL to redirect a PSU to
         pub url: Url,
     }
@@ -985,61 +446,6 @@ null (or the field is not set) if it is not possible to determine whether the ac
             Default::default()
         }
     }
-    ///`CreditDebitIndicator`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum CreditDebitIndicator {
-        #[serde(rename = "CRDT")]
-        Crdt,
-        #[serde(rename = "DBIT")]
-        Dbit,
-    }
-    impl ::std::fmt::Display for CreditDebitIndicator {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Crdt => f.write_str("CRDT"),
-                Self::Dbit => f.write_str("DBIT"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CreditDebitIndicator {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CRDT" => Ok(Self::Crdt),
-                "DBIT" => Ok(Self::Dbit),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CreditDebitIndicator {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CreditDebitIndicator {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///Payment instruction to be executed by the ASPSP
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CreditTransferTransaction {
@@ -1048,10 +454,10 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub end_date: ::std::option::Option<EndDate>,
         ///Execution date shifting rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub execution_rule: ::std::option::Option<ExecutionRule>,
+        pub execution_rule: ::std::option::Option<crate::types::ExecutionRule>,
         ///Frequency rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub frequency: ::std::option::Option<FrequencyCode>,
+        pub frequency: ::std::option::Option<crate::types::FrequencyCode>,
         pub instructed_amount: crate::Amount,
         ///Set of elements used to reference a payment instruction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1089,10 +495,10 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub end_date: ::std::option::Option<EndDate>,
         ///Execution date shifting rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub execution_rule: ::std::option::Option<ExecutionRule>,
+        pub execution_rule: ::std::option::Option<crate::types::ExecutionRule>,
         ///Frequency rule for standing orders
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub frequency: ::std::option::Option<FrequencyCode>,
+        pub frequency: ::std::option::Option<crate::types::FrequencyCode>,
         pub instructed_amount: crate::Amount,
         ///Set of elements used to reference a payment instruction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1115,7 +521,7 @@ null (or the field is not set) if it is not possible to determine whether the ac
         pub transaction_id: ::std::option::Option<::std::string::String>,
         ///Status of the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub transaction_status: ::std::option::Option<PaymentStatus>,
+        pub transaction_status: ::std::option::Option<crate::types::PaymentStatus>,
         ///Identifies the final party receiving the funds in the payment transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub ultimate_creditor: ::std::option::Option<PartyIdentification>,
@@ -1214,300 +620,6 @@ If not given, the standing order is considered as endless.
             value.parse()
         }
     }
-    ///`Environment`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum Environment {
-        #[serde(rename = "SANDBOX")]
-        Sandbox,
-        #[serde(rename = "PRODUCTION")]
-        Production,
-    }
-    impl ::std::fmt::Display for Environment {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Sandbox => f.write_str("SANDBOX"),
-                Self::Production => f.write_str("PRODUCTION"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for Environment {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SANDBOX" => Ok(Self::Sandbox),
-                "PRODUCTION" => Ok(Self::Production),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for Environment {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for Environment {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`ErrorCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum ErrorCode {
-        #[serde(rename = "ACCESS_DENIED")]
-        AccessDenied,
-        #[serde(rename = "ACCOUNT_DOES_NOT_EXIST")]
-        AccountDoesNotExist,
-        #[serde(rename = "ALREADY_AUTHORIZED")]
-        AlreadyAuthorized,
-        #[serde(rename = "ASPSP_ACCOUNT_NOT_ACCESSIBLE")]
-        AspspAccountNotAccessible,
-        #[serde(rename = "ASPSP_ERROR")]
-        AspspError,
-        #[serde(rename = "ASPSP_TIMEOUT")]
-        AspspTimeout,
-        #[serde(rename = "ASPSP_RATE_LIMIT_EXCEEDED")]
-        AspspRateLimitExceeded,
-        #[serde(rename = "AUTHORIZATION_NOT_PROVIDED")]
-        AuthorizationNotProvided,
-        #[serde(rename = "CLOSED_SESSION")]
-        ClosedSession,
-        #[serde(rename = "DATE_TO_WITHOUT_DATE_FROM")]
-        DateToWithoutDateFrom,
-        #[serde(rename = "DATE_FROM_IN_FUTURE")]
-        DateFromInFuture,
-        #[serde(rename = "EXPIRED_AUTHORIZATION_CODE")]
-        ExpiredAuthorizationCode,
-        #[serde(rename = "EXPIRED_SESSION")]
-        ExpiredSession,
-        #[serde(rename = "INVALID_ACCOUNT_ID")]
-        InvalidAccountId,
-        #[serde(rename = "INVALID_HOST")]
-        InvalidHost,
-        #[serde(rename = "UNAUTHORIZED_IP")]
-        UnauthorizedIp,
-        #[serde(rename = "NO_ACCOUNTS_ADDED")]
-        NoAccountsAdded,
-        #[serde(rename = "PAYMENT_NOT_FOUND")]
-        PaymentNotFound,
-        #[serde(rename = "PSU_HEADER_NOT_PROVIDED")]
-        PsuHeaderNotProvided,
-        #[serde(rename = "PSU_HEADER_INVALID")]
-        PsuHeaderInvalid,
-        #[serde(rename = "REDIRECT_URI_NOT_ALLOWED")]
-        RedirectUriNotAllowed,
-        #[serde(rename = "REVOKED_SESSION")]
-        RevokedSession,
-        #[serde(rename = "SESSION_DOES_NOT_EXIST")]
-        SessionDoesNotExist,
-        #[serde(rename = "UNAUTHORIZED_ACCESS")]
-        UnauthorizedAccess,
-        #[serde(rename = "UNTRUSTED_PAYMENT_PARTY")]
-        UntrustedPaymentParty,
-        #[serde(rename = "WEBHOOK_URI_NOT_ALLOWED")]
-        WebhookUriNotAllowed,
-        #[serde(rename = "WRONG_ASPSP_PROVIDED")]
-        WrongAspspProvided,
-        #[serde(rename = "WRONG_AUTHORIZATION_CODE")]
-        WrongAuthorizationCode,
-        #[serde(rename = "WRONG_DATE_INTERVAL")]
-        WrongDateInterval,
-        #[serde(rename = "WRONG_CREDENTIALS_PROVIDED")]
-        WrongCredentialsProvided,
-        #[serde(rename = "WRONG_REQUEST_PARAMETERS")]
-        WrongRequestParameters,
-        #[serde(rename = "WRONG_SESSION_STATUS")]
-        WrongSessionStatus,
-        #[serde(rename = "WRONG_TRANSACTIONS_PERIOD")]
-        WrongTransactionsPeriod,
-        #[serde(rename = "WRONG_CONTINUATION_KEY")]
-        WrongContinuationKey,
-        #[serde(rename = "TRANSACTION_DOES_NOT_EXIST")]
-        TransactionDoesNotExist,
-        #[serde(rename = "PAYMENT_LIMIT_EXCEEDED")]
-        PaymentLimitExceeded,
-        #[serde(rename = "ASPSP_PAYMENT_NOT_ACCESSIBLE")]
-        AspspPaymentNotAccessible,
-        #[serde(rename = "INVALID_PAYMENT")]
-        InvalidPayment,
-        #[serde(rename = "ASPSP_PSU_ACTION_REQUIRED")]
-        AspspPsuActionRequired,
-        #[serde(rename = "PAYMENT_NOT_FINALIZED")]
-        PaymentNotFinalized,
-        #[serde(rename = "PAYMENT_SUBMISSION_NOT_SUPPORTED")]
-        PaymentSubmissionNotSupported,
-        #[serde(rename = "PAYMENT_NOT_AUTHORIZED")]
-        PaymentNotAuthorized,
-        #[serde(rename = "PAYMENT_SUBMISSION_NOT_DEFERRED")]
-        PaymentSubmissionNotDeferred,
-    }
-    impl ::std::fmt::Display for ErrorCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AccessDenied => f.write_str("ACCESS_DENIED"),
-                Self::AccountDoesNotExist => f.write_str("ACCOUNT_DOES_NOT_EXIST"),
-                Self::AlreadyAuthorized => f.write_str("ALREADY_AUTHORIZED"),
-                Self::AspspAccountNotAccessible => {
-                    f.write_str("ASPSP_ACCOUNT_NOT_ACCESSIBLE")
-                }
-                Self::AspspError => f.write_str("ASPSP_ERROR"),
-                Self::AspspTimeout => f.write_str("ASPSP_TIMEOUT"),
-                Self::AspspRateLimitExceeded => f.write_str("ASPSP_RATE_LIMIT_EXCEEDED"),
-                Self::AuthorizationNotProvided => {
-                    f.write_str("AUTHORIZATION_NOT_PROVIDED")
-                }
-                Self::ClosedSession => f.write_str("CLOSED_SESSION"),
-                Self::DateToWithoutDateFrom => f.write_str("DATE_TO_WITHOUT_DATE_FROM"),
-                Self::DateFromInFuture => f.write_str("DATE_FROM_IN_FUTURE"),
-                Self::ExpiredAuthorizationCode => {
-                    f.write_str("EXPIRED_AUTHORIZATION_CODE")
-                }
-                Self::ExpiredSession => f.write_str("EXPIRED_SESSION"),
-                Self::InvalidAccountId => f.write_str("INVALID_ACCOUNT_ID"),
-                Self::InvalidHost => f.write_str("INVALID_HOST"),
-                Self::UnauthorizedIp => f.write_str("UNAUTHORIZED_IP"),
-                Self::NoAccountsAdded => f.write_str("NO_ACCOUNTS_ADDED"),
-                Self::PaymentNotFound => f.write_str("PAYMENT_NOT_FOUND"),
-                Self::PsuHeaderNotProvided => f.write_str("PSU_HEADER_NOT_PROVIDED"),
-                Self::PsuHeaderInvalid => f.write_str("PSU_HEADER_INVALID"),
-                Self::RedirectUriNotAllowed => f.write_str("REDIRECT_URI_NOT_ALLOWED"),
-                Self::RevokedSession => f.write_str("REVOKED_SESSION"),
-                Self::SessionDoesNotExist => f.write_str("SESSION_DOES_NOT_EXIST"),
-                Self::UnauthorizedAccess => f.write_str("UNAUTHORIZED_ACCESS"),
-                Self::UntrustedPaymentParty => f.write_str("UNTRUSTED_PAYMENT_PARTY"),
-                Self::WebhookUriNotAllowed => f.write_str("WEBHOOK_URI_NOT_ALLOWED"),
-                Self::WrongAspspProvided => f.write_str("WRONG_ASPSP_PROVIDED"),
-                Self::WrongAuthorizationCode => f.write_str("WRONG_AUTHORIZATION_CODE"),
-                Self::WrongDateInterval => f.write_str("WRONG_DATE_INTERVAL"),
-                Self::WrongCredentialsProvided => {
-                    f.write_str("WRONG_CREDENTIALS_PROVIDED")
-                }
-                Self::WrongRequestParameters => f.write_str("WRONG_REQUEST_PARAMETERS"),
-                Self::WrongSessionStatus => f.write_str("WRONG_SESSION_STATUS"),
-                Self::WrongTransactionsPeriod => f.write_str("WRONG_TRANSACTIONS_PERIOD"),
-                Self::WrongContinuationKey => f.write_str("WRONG_CONTINUATION_KEY"),
-                Self::TransactionDoesNotExist => {
-                    f.write_str("TRANSACTION_DOES_NOT_EXIST")
-                }
-                Self::PaymentLimitExceeded => f.write_str("PAYMENT_LIMIT_EXCEEDED"),
-                Self::AspspPaymentNotAccessible => {
-                    f.write_str("ASPSP_PAYMENT_NOT_ACCESSIBLE")
-                }
-                Self::InvalidPayment => f.write_str("INVALID_PAYMENT"),
-                Self::AspspPsuActionRequired => f.write_str("ASPSP_PSU_ACTION_REQUIRED"),
-                Self::PaymentNotFinalized => f.write_str("PAYMENT_NOT_FINALIZED"),
-                Self::PaymentSubmissionNotSupported => {
-                    f.write_str("PAYMENT_SUBMISSION_NOT_SUPPORTED")
-                }
-                Self::PaymentNotAuthorized => f.write_str("PAYMENT_NOT_AUTHORIZED"),
-                Self::PaymentSubmissionNotDeferred => {
-                    f.write_str("PAYMENT_SUBMISSION_NOT_DEFERRED")
-                }
-            }
-        }
-    }
-    impl ::std::str::FromStr for ErrorCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ACCESS_DENIED" => Ok(Self::AccessDenied),
-                "ACCOUNT_DOES_NOT_EXIST" => Ok(Self::AccountDoesNotExist),
-                "ALREADY_AUTHORIZED" => Ok(Self::AlreadyAuthorized),
-                "ASPSP_ACCOUNT_NOT_ACCESSIBLE" => Ok(Self::AspspAccountNotAccessible),
-                "ASPSP_ERROR" => Ok(Self::AspspError),
-                "ASPSP_TIMEOUT" => Ok(Self::AspspTimeout),
-                "ASPSP_RATE_LIMIT_EXCEEDED" => Ok(Self::AspspRateLimitExceeded),
-                "AUTHORIZATION_NOT_PROVIDED" => Ok(Self::AuthorizationNotProvided),
-                "CLOSED_SESSION" => Ok(Self::ClosedSession),
-                "DATE_TO_WITHOUT_DATE_FROM" => Ok(Self::DateToWithoutDateFrom),
-                "DATE_FROM_IN_FUTURE" => Ok(Self::DateFromInFuture),
-                "EXPIRED_AUTHORIZATION_CODE" => Ok(Self::ExpiredAuthorizationCode),
-                "EXPIRED_SESSION" => Ok(Self::ExpiredSession),
-                "INVALID_ACCOUNT_ID" => Ok(Self::InvalidAccountId),
-                "INVALID_HOST" => Ok(Self::InvalidHost),
-                "UNAUTHORIZED_IP" => Ok(Self::UnauthorizedIp),
-                "NO_ACCOUNTS_ADDED" => Ok(Self::NoAccountsAdded),
-                "PAYMENT_NOT_FOUND" => Ok(Self::PaymentNotFound),
-                "PSU_HEADER_NOT_PROVIDED" => Ok(Self::PsuHeaderNotProvided),
-                "PSU_HEADER_INVALID" => Ok(Self::PsuHeaderInvalid),
-                "REDIRECT_URI_NOT_ALLOWED" => Ok(Self::RedirectUriNotAllowed),
-                "REVOKED_SESSION" => Ok(Self::RevokedSession),
-                "SESSION_DOES_NOT_EXIST" => Ok(Self::SessionDoesNotExist),
-                "UNAUTHORIZED_ACCESS" => Ok(Self::UnauthorizedAccess),
-                "UNTRUSTED_PAYMENT_PARTY" => Ok(Self::UntrustedPaymentParty),
-                "WEBHOOK_URI_NOT_ALLOWED" => Ok(Self::WebhookUriNotAllowed),
-                "WRONG_ASPSP_PROVIDED" => Ok(Self::WrongAspspProvided),
-                "WRONG_AUTHORIZATION_CODE" => Ok(Self::WrongAuthorizationCode),
-                "WRONG_DATE_INTERVAL" => Ok(Self::WrongDateInterval),
-                "WRONG_CREDENTIALS_PROVIDED" => Ok(Self::WrongCredentialsProvided),
-                "WRONG_REQUEST_PARAMETERS" => Ok(Self::WrongRequestParameters),
-                "WRONG_SESSION_STATUS" => Ok(Self::WrongSessionStatus),
-                "WRONG_TRANSACTIONS_PERIOD" => Ok(Self::WrongTransactionsPeriod),
-                "WRONG_CONTINUATION_KEY" => Ok(Self::WrongContinuationKey),
-                "TRANSACTION_DOES_NOT_EXIST" => Ok(Self::TransactionDoesNotExist),
-                "PAYMENT_LIMIT_EXCEEDED" => Ok(Self::PaymentLimitExceeded),
-                "ASPSP_PAYMENT_NOT_ACCESSIBLE" => Ok(Self::AspspPaymentNotAccessible),
-                "INVALID_PAYMENT" => Ok(Self::InvalidPayment),
-                "ASPSP_PSU_ACTION_REQUIRED" => Ok(Self::AspspPsuActionRequired),
-                "PAYMENT_NOT_FINALIZED" => Ok(Self::PaymentNotFinalized),
-                "PAYMENT_SUBMISSION_NOT_SUPPORTED" => {
-                    Ok(Self::PaymentSubmissionNotSupported)
-                }
-                "PAYMENT_NOT_AUTHORIZED" => Ok(Self::PaymentNotAuthorized),
-                "PAYMENT_SUBMISSION_NOT_DEFERRED" => {
-                    Ok(Self::PaymentSubmissionNotDeferred)
-                }
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ErrorCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ErrorCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`ErrorResponse`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ErrorResponse {
@@ -1519,7 +631,7 @@ If not given, the standing order is considered as endless.
         pub detail: ::std::option::Option<::serde_json::Value>,
         ///Text error code
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub error: ::std::option::Option<ErrorCode>,
+        pub error: ::std::option::Option<crate::types::ErrorCode>,
         ///Error message
         pub message: ::std::string::String,
     }
@@ -1542,7 +654,7 @@ If not given, the standing order is considered as endless.
         pub instructed_amount: ::std::option::Option<crate::Amount>,
         ///Specifies the type of exchange rate applied to the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub rate_type: ::std::option::Option<RateType>,
+        pub rate_type: ::std::option::Option<crate::types::RateType>,
         ///ISO 4217 code of the currency, in which the rate of exchange is expressed in a currency exchange. In the example 1GBP = xxxCUR, the unit currency is GBP.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub unit_currency: ::std::option::Option<CurrencyCode>,
@@ -1550,61 +662,6 @@ If not given, the standing order is considered as endless.
     impl ExchangeRate {
         pub fn builder() -> builder::ExchangeRate {
             Default::default()
-        }
-    }
-    ///`ExecutionRule`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum ExecutionRule {
-        #[serde(rename = "FWNG")]
-        Fwng,
-        #[serde(rename = "PREC")]
-        Prec,
-    }
-    impl ::std::fmt::Display for ExecutionRule {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Fwng => f.write_str("FWNG"),
-                Self::Prec => f.write_str("PREC"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExecutionRule {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "FWNG" => Ok(Self::Fwng),
-                "PREC" => Ok(Self::Prec),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExecutionRule {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExecutionRule {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`FinancialInstitutionIdentification`
@@ -1627,85 +684,6 @@ If not given, the standing order is considered as endless.
             Default::default()
         }
     }
-    ///`FrequencyCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum FrequencyCode {
-        #[serde(rename = "DAIL")]
-        Dail,
-        #[serde(rename = "WEEK")]
-        Week,
-        #[serde(rename = "TOWK")]
-        Towk,
-        #[serde(rename = "MNTH")]
-        Mnth,
-        #[serde(rename = "TOMN")]
-        Tomn,
-        #[serde(rename = "QUTR")]
-        Qutr,
-        #[serde(rename = "SEMI")]
-        Semi,
-        #[serde(rename = "YEAR")]
-        Year,
-    }
-    impl ::std::fmt::Display for FrequencyCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Dail => f.write_str("DAIL"),
-                Self::Week => f.write_str("WEEK"),
-                Self::Towk => f.write_str("TOWK"),
-                Self::Mnth => f.write_str("MNTH"),
-                Self::Tomn => f.write_str("TOMN"),
-                Self::Qutr => f.write_str("QUTR"),
-                Self::Semi => f.write_str("SEMI"),
-                Self::Year => f.write_str("YEAR"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for FrequencyCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "DAIL" => Ok(Self::Dail),
-                "WEEK" => Ok(Self::Week),
-                "TOWK" => Ok(Self::Towk),
-                "MNTH" => Ok(Self::Mnth),
-                "TOMN" => Ok(Self::Tomn),
-                "QUTR" => Ok(Self::Qutr),
-                "SEMI" => Ok(Self::Semi),
-                "YEAR" => Ok(Self::Year),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for FrequencyCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for FrequencyCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`GenericIdentification`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GenericIdentification {
@@ -1714,7 +692,7 @@ If not given, the standing order is considered as endless.
         ///Entity that assigns the identification. This could be a country code or any organisation name or identifier that can be recognized by both parties
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub issuer: ::std::option::Option<::std::string::String>,
-        pub scheme_name: SchemeName,
+        pub scheme_name: crate::types::SchemeName,
     }
     impl GenericIdentification {
         pub fn builder() -> builder::GenericIdentification {
@@ -1731,7 +709,7 @@ If not given, the standing order is considered as endless.
         ///Application description
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub description: ::std::option::Option<::std::string::String>,
-        pub environment: Environment,
+        pub environment: crate::types::Environment,
         ///Application key id
         pub kid: ::std::string::String,
         ///Application name
@@ -1739,7 +717,7 @@ If not given, the standing order is considered as endless.
         ///List of allowed redirect urls
         pub redirect_urls: ::std::vec::Vec<RedirectUrlsItem>,
         ///List of supported services
-        pub services: ::std::vec::Vec<Service>,
+        pub services: ::std::vec::Vec<crate::types::Service>,
     }
     impl GetApplicationResponse {
         pub fn builder() -> builder::GetApplicationResponse {
@@ -1766,10 +744,10 @@ If not given, the standing order is considered as endless.
         pub payment_details: PaymentRequestResourceDetails,
         ///Payment ID
         pub payment_id: ::uuid::Uuid,
-        pub payment_type: PaymentType,
+        pub payment_type: crate::types::PaymentType,
         ///Hashed unique identification of a PSU used by the client application. In case PSU ID is not passed by the client application, the hash is calculated based on a random value. The hash also inherits the application ID, so different hashes will be calculated when using the same PSU ID with different applications.
         pub psu_id_hash: ::std::string::String,
-        pub status: PaymentStatus,
+        pub status: crate::types::PaymentStatus,
         ///Details explaining the payment status, provided when the cause can be determined unambiguously, mainly for rejected payments
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status_reason_information: ::std::option::Option<StatusReasonInformation>,
@@ -1810,8 +788,8 @@ If not given, the standing order is considered as endless.
         pub created: ::jiff::Timestamp,
         ///Hashed unique identification of a PSU used by the client application. In case PSU ID is not passed by the client application, the hash is calculated based on a random value. The hash also inherits the application ID, so different hashes will be calculated when using the same PSU ID with different applications.
         pub psu_id_hash: ::std::string::String,
-        pub psu_type: PsuType,
-        pub status: SessionStatus,
+        pub psu_type: crate::types::PsuType,
+        pub status: crate::types::SessionStatus,
     }
     impl GetSessionResponse {
         pub fn builder() -> builder::GetSessionResponse {
@@ -2048,7 +1026,7 @@ API: Unique identification shared between the PISP and the ASPSP
     pub struct PaymentRequestResource {
         ///Specifies which party/parties will bear the charges associated with the processing of the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub charge_bearer: ::std::option::Option<ChargeBearerCode>,
+        pub charge_bearer: ::std::option::Option<crate::types::ChargeBearerCode>,
         ///Payment instructions to be executed towards one or multiple beneficiaries in the payment process. Maximum number of transactions depend on the ASPSP and type of the payment taking into accounts its specificities about payment request handling.
         pub credit_transfer_transaction: ::std::vec::Vec<CreditTransferTransaction>,
         ///Identification of the party sending funds
@@ -2071,7 +1049,7 @@ API: Unique identification shared between the PISP and the ASPSP
         pub payment_type_information: ::std::option::Option<PaymentTypeInformation>,
         ///Underlying reason for the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub purpose: ::std::option::Option<PurposeCode>,
+        pub purpose: ::std::option::Option<crate::types::PurposeCode>,
     }
     impl PaymentRequestResource {
         pub fn builder() -> builder::PaymentRequestResource {
@@ -2083,7 +1061,7 @@ API: Unique identification shared between the PISP and the ASPSP
     pub struct PaymentRequestResourceDetails {
         ///Specifies which party/parties will bear the charges associated with the processing of the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub charge_bearer: ::std::option::Option<ChargeBearerCode>,
+        pub charge_bearer: ::std::option::Option<crate::types::ChargeBearerCode>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub credit_transfer_transaction: ::std::option::Option<
             ::std::vec::Vec<CreditTransferTransactionDetails>,
@@ -2108,7 +1086,7 @@ API: Unique identification shared between the PISP and the ASPSP
         pub payment_type_information: ::std::option::Option<PaymentTypeInformation>,
         ///Underlying reason for the payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub purpose: ::std::option::Option<PurposeCode>,
+        pub purpose: ::std::option::Option<crate::types::PurposeCode>,
     }
     impl ::std::default::Default for PaymentRequestResourceDetails {
         fn default() -> Self {
@@ -2130,241 +1108,21 @@ API: Unique identification shared between the PISP and the ASPSP
             Default::default()
         }
     }
-    ///`PaymentStatus`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum PaymentStatus {
-        #[serde(rename = "ACCC")]
-        Accc,
-        #[serde(rename = "ACCP")]
-        Accp,
-        #[serde(rename = "ACSC")]
-        Acsc,
-        #[serde(rename = "ACSP")]
-        Acsp,
-        #[serde(rename = "ACTC")]
-        Actc,
-        #[serde(rename = "ACWC")]
-        Acwc,
-        #[serde(rename = "ACWP")]
-        Acwp,
-        #[serde(rename = "PART")]
-        Part,
-        #[serde(rename = "RCVD")]
-        Rcvd,
-        #[serde(rename = "PDNG")]
-        Pdng,
-        #[serde(rename = "RJCT")]
-        Rjct,
-        #[serde(rename = "ACPT")]
-        Acpt,
-        #[serde(rename = "ACCR")]
-        Accr,
-        #[serde(rename = "RJCR")]
-        Rjcr,
-        #[serde(rename = "PACR")]
-        Pacr,
-        #[serde(rename = "PDCR")]
-        Pdcr,
-        #[serde(rename = "CNCL")]
-        Cncl,
-        #[serde(rename = "NULL")]
-        Null,
-    }
-    impl ::std::fmt::Display for PaymentStatus {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Accc => f.write_str("ACCC"),
-                Self::Accp => f.write_str("ACCP"),
-                Self::Acsc => f.write_str("ACSC"),
-                Self::Acsp => f.write_str("ACSP"),
-                Self::Actc => f.write_str("ACTC"),
-                Self::Acwc => f.write_str("ACWC"),
-                Self::Acwp => f.write_str("ACWP"),
-                Self::Part => f.write_str("PART"),
-                Self::Rcvd => f.write_str("RCVD"),
-                Self::Pdng => f.write_str("PDNG"),
-                Self::Rjct => f.write_str("RJCT"),
-                Self::Acpt => f.write_str("ACPT"),
-                Self::Accr => f.write_str("ACCR"),
-                Self::Rjcr => f.write_str("RJCR"),
-                Self::Pacr => f.write_str("PACR"),
-                Self::Pdcr => f.write_str("PDCR"),
-                Self::Cncl => f.write_str("CNCL"),
-                Self::Null => f.write_str("NULL"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for PaymentStatus {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ACCC" => Ok(Self::Accc),
-                "ACCP" => Ok(Self::Accp),
-                "ACSC" => Ok(Self::Acsc),
-                "ACSP" => Ok(Self::Acsp),
-                "ACTC" => Ok(Self::Actc),
-                "ACWC" => Ok(Self::Acwc),
-                "ACWP" => Ok(Self::Acwp),
-                "PART" => Ok(Self::Part),
-                "RCVD" => Ok(Self::Rcvd),
-                "PDNG" => Ok(Self::Pdng),
-                "RJCT" => Ok(Self::Rjct),
-                "ACPT" => Ok(Self::Acpt),
-                "ACCR" => Ok(Self::Accr),
-                "RJCR" => Ok(Self::Rjcr),
-                "PACR" => Ok(Self::Pacr),
-                "PDCR" => Ok(Self::Pdcr),
-                "CNCL" => Ok(Self::Cncl),
-                "NULL" => Ok(Self::Null),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for PaymentStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for PaymentStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`PaymentType`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum PaymentType {
-        #[serde(rename = "SEPA")]
-        Sepa,
-        #[serde(rename = "INST_SEPA")]
-        InstSepa,
-        #[serde(rename = "DOMESTIC")]
-        Domestic,
-        #[serde(rename = "CROSSBORDER")]
-        Crossborder,
-        #[serde(rename = "DOMESTIC_PL_ELIXIR")]
-        DomesticPlElixir,
-        #[serde(rename = "DOMESTIC_PL_EXPRESS_ELIXIR")]
-        DomesticPlExpressElixir,
-        #[serde(rename = "DOMESTIC_PL_SORBNET")]
-        DomesticPlSorbnet,
-        #[serde(rename = "DOMESTIC_PL_BLUE_CASH")]
-        DomesticPlBlueCash,
-        #[serde(rename = "DOMESTIC_SE_GIRO")]
-        DomesticSeGiro,
-        #[serde(rename = "INTERNAL")]
-        Internal,
-        #[serde(rename = "BULK_SEPA")]
-        BulkSepa,
-        #[serde(rename = "BULK_DOMESTIC")]
-        BulkDomestic,
-        #[serde(rename = "BULK_DOMESTIC_SE_GIRO")]
-        BulkDomesticSeGiro,
-    }
-    impl ::std::fmt::Display for PaymentType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Sepa => f.write_str("SEPA"),
-                Self::InstSepa => f.write_str("INST_SEPA"),
-                Self::Domestic => f.write_str("DOMESTIC"),
-                Self::Crossborder => f.write_str("CROSSBORDER"),
-                Self::DomesticPlElixir => f.write_str("DOMESTIC_PL_ELIXIR"),
-                Self::DomesticPlExpressElixir => {
-                    f.write_str("DOMESTIC_PL_EXPRESS_ELIXIR")
-                }
-                Self::DomesticPlSorbnet => f.write_str("DOMESTIC_PL_SORBNET"),
-                Self::DomesticPlBlueCash => f.write_str("DOMESTIC_PL_BLUE_CASH"),
-                Self::DomesticSeGiro => f.write_str("DOMESTIC_SE_GIRO"),
-                Self::Internal => f.write_str("INTERNAL"),
-                Self::BulkSepa => f.write_str("BULK_SEPA"),
-                Self::BulkDomestic => f.write_str("BULK_DOMESTIC"),
-                Self::BulkDomesticSeGiro => f.write_str("BULK_DOMESTIC_SE_GIRO"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for PaymentType {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SEPA" => Ok(Self::Sepa),
-                "INST_SEPA" => Ok(Self::InstSepa),
-                "DOMESTIC" => Ok(Self::Domestic),
-                "CROSSBORDER" => Ok(Self::Crossborder),
-                "DOMESTIC_PL_ELIXIR" => Ok(Self::DomesticPlElixir),
-                "DOMESTIC_PL_EXPRESS_ELIXIR" => Ok(Self::DomesticPlExpressElixir),
-                "DOMESTIC_PL_SORBNET" => Ok(Self::DomesticPlSorbnet),
-                "DOMESTIC_PL_BLUE_CASH" => Ok(Self::DomesticPlBlueCash),
-                "DOMESTIC_SE_GIRO" => Ok(Self::DomesticSeGiro),
-                "INTERNAL" => Ok(Self::Internal),
-                "BULK_SEPA" => Ok(Self::BulkSepa),
-                "BULK_DOMESTIC" => Ok(Self::BulkDomestic),
-                "BULK_DOMESTIC_SE_GIRO" => Ok(Self::BulkDomesticSeGiro),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for PaymentType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for PaymentType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`PaymentTypeInformation`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct PaymentTypeInformation {
         ///Specifies the high level purpose of the instruction based on a set of pre-defined categories. This is used by the initiating party to provide information concerning the processing of the payment. It is likely to trigger special processing by any of the agents involved in the payment chain.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub category_purpose: ::std::option::Option<CategoryPurposeCode>,
+        pub category_purpose: ::std::option::Option<crate::types::CategoryPurposeCode>,
         ///Indicator of the urgency or order of importance that the instructing party would like the instructed party to apply
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub instruction_priority: ::std::option::Option<PriorityCode>,
+        pub instruction_priority: ::std::option::Option<crate::types::PriorityCode>,
         ///User community specific instrument
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub local_instrument: ::std::option::Option<::std::string::String>,
         ///Agreement under which or rules under which the transaction should be processed. Specifies a pre-agreed service or level of service between the parties, as published in an external service level code list
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub service_level: ::std::option::Option<ServiceLevelCode>,
+        pub service_level: ::std::option::Option<crate::types::ServiceLevelCode>,
     }
     impl PaymentTypeInformation {
         pub fn builder() -> builder::PaymentTypeInformation {
@@ -2379,7 +1137,7 @@ API: Unique identification shared between the PISP and the ASPSP
         pub address_line: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
         ///Available address type values
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub address_type: ::std::option::Option<AddressType>,
+        pub address_type: ::std::option::Option<crate::types::AddressType>,
         ///Number that identifies the position of a building on a street.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub building_number: ::std::option::Option<::std::string::String>,
@@ -2409,65 +1167,6 @@ added to a postal address to assist the sorting of mail.*/
     impl PostalAddress {
         pub fn builder() -> builder::PostalAddress {
             Default::default()
-        }
-    }
-    ///`PriorityCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum PriorityCode {
-        #[serde(rename = "HIGH")]
-        High,
-        #[serde(rename = "NORM")]
-        Norm,
-        #[serde(rename = "EXPR")]
-        Expr,
-    }
-    impl ::std::fmt::Display for PriorityCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::High => f.write_str("HIGH"),
-                Self::Norm => f.write_str("NORM"),
-                Self::Expr => f.write_str("EXPR"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for PriorityCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "HIGH" => Ok(Self::High),
-                "NORM" => Ok(Self::Norm),
-                "EXPR" => Ok(Self::Expr),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for PriorityCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for PriorityCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///Comma separated latitude and longitude coordinates without spaces
@@ -2530,187 +1229,6 @@ added to a postal address to assist the sorting of mail.*/
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
-        }
-    }
-    ///`PsuType`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum PsuType {
-        #[serde(rename = "business")]
-        Business,
-        #[serde(rename = "personal")]
-        Personal,
-    }
-    impl ::std::fmt::Display for PsuType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Business => f.write_str("business"),
-                Self::Personal => f.write_str("personal"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for PsuType {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "business" => Ok(Self::Business),
-                "personal" => Ok(Self::Personal),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for PsuType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for PsuType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`PurposeCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum PurposeCode {
-        #[serde(rename = "ACCT")]
-        Acct,
-        #[serde(rename = "CASH")]
-        Cash,
-        #[serde(rename = "COMC")]
-        Comc,
-        #[serde(rename = "CPKC")]
-        Cpkc,
-        #[serde(rename = "TRPT")]
-        Trpt,
-    }
-    impl ::std::fmt::Display for PurposeCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Acct => f.write_str("ACCT"),
-                Self::Cash => f.write_str("CASH"),
-                Self::Comc => f.write_str("COMC"),
-                Self::Cpkc => f.write_str("CPKC"),
-                Self::Trpt => f.write_str("TRPT"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for PurposeCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ACCT" => Ok(Self::Acct),
-                "CASH" => Ok(Self::Cash),
-                "COMC" => Ok(Self::Comc),
-                "CPKC" => Ok(Self::Cpkc),
-                "TRPT" => Ok(Self::Trpt),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for PurposeCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for PurposeCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`RateType`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum RateType {
-        #[serde(rename = "SPOT")]
-        Spot,
-        #[serde(rename = "SALE")]
-        Sale,
-        #[serde(rename = "AGRD")]
-        Agrd,
-    }
-    impl ::std::fmt::Display for RateType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Spot => f.write_str("SPOT"),
-                Self::Sale => f.write_str("SALE"),
-                Self::Agrd => f.write_str("AGRD"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for RateType {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SPOT" => Ok(Self::Spot),
-                "SALE" => Ok(Self::Sale),
-                "AGRD" => Ok(Self::Agrd),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for RateType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for RateType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///URL that PSU will be redirected to after authorization
@@ -2863,77 +1381,6 @@ added to a postal address to assist the sorting of mail.*/
             Ok(Self(value.to_string()))
         }
     }
-    ///`ReferenceNumberScheme`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum ReferenceNumberScheme {
-        #[serde(rename = "SEBG")]
-        Sebg,
-        #[serde(rename = "NORF")]
-        Norf,
-        #[serde(rename = "FIRF")]
-        Firf,
-        #[serde(rename = "INTL")]
-        Intl,
-        #[serde(rename = "BERF")]
-        Berf,
-        #[serde(rename = "SDDM")]
-        Sddm,
-    }
-    impl ::std::fmt::Display for ReferenceNumberScheme {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Sebg => f.write_str("SEBG"),
-                Self::Norf => f.write_str("NORF"),
-                Self::Firf => f.write_str("FIRF"),
-                Self::Intl => f.write_str("INTL"),
-                Self::Berf => f.write_str("BERF"),
-                Self::Sddm => f.write_str("SDDM"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ReferenceNumberScheme {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SEBG" => Ok(Self::Sebg),
-                "NORF" => Ok(Self::Norf),
-                "FIRF" => Ok(Self::Firf),
-                "INTL" => Ok(Self::Intl),
-                "BERF" => Ok(Self::Berf),
-                "SDDM" => Ok(Self::Sddm),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ReferenceNumberScheme {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ReferenceNumberScheme {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`RegulatoryAuthority`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct RegulatoryAuthority {
@@ -3070,11 +1517,13 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         ///List of supported charge bearer codes
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub charge_bearer_values: ::std::option::Option<
-            ::std::vec::Vec<ChargeBearerCode>,
+            ::std::vec::Vec<crate::types::ChargeBearerCode>,
         >,
         ///List of supported creditor account schemas
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub creditor_account_schemas: ::std::option::Option<::std::vec::Vec<SchemeName>>,
+        pub creditor_account_schemas: ::std::option::Option<
+            ::std::vec::Vec<crate::types::SchemeName>,
+        >,
         ///States if creditor agent bicFi is required. Create payment body field: `payment_request.credit_transfer_transaction[*].beneficiary.creditor_agent.bic_fi`
         #[serde(
             default = "defaults::response_payment_type_creditor_agent_bic_fi_required"
@@ -3106,7 +1555,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub debtor_account_required: ::std::option::Option<bool>,
         ///List of supported debtor account schemas
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub debtor_account_schemas: ::std::option::Option<::std::vec::Vec<SchemeName>>,
+        pub debtor_account_schemas: ::std::option::Option<
+            ::std::vec::Vec<crate::types::SchemeName>,
+        >,
         ///States if debtor's contact email is required when a payment this type is being initiated. Create payment body field: `payment_request.debtor.contact_details.email_address`
         #[serde(
             default = "defaults::response_payment_type_debtor_contact_email_required"
@@ -3128,20 +1579,22 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         ///List of the final successful statuses for the payment type. Please note that when a payment reaches one of the statuses provided in this list, it is not yet guaranteed that the funds will be credited to the creditor's account specified in the payment request. It is up to the application that created the payment to conclude whether the funds are (or will be) received, depending on the actual payment status and other factors.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub final_successful_statuses: ::std::option::Option<
-            ::std::vec::Vec<PaymentStatus>,
+            ::std::vec::Vec<crate::types::PaymentStatus>,
         >,
         ///Maximum number of transactions per payment
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub max_transactions: ::std::option::Option<i64>,
-        pub payment_type: PaymentType,
+        pub payment_type: crate::types::PaymentType,
         ///List of supported priority codes
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub priority_codes: ::std::option::Option<::std::vec::Vec<PriorityCode>>,
-        pub psu_type: PsuType,
+        pub priority_codes: ::std::option::Option<
+            ::std::vec::Vec<crate::types::PriorityCode>,
+        >,
+        pub psu_type: crate::types::PsuType,
         ///List of reference number schemas supported by a payment method
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub reference_number_schemas: ::std::option::Option<
-            ::std::vec::Vec<ReferenceNumberScheme>,
+            ::std::vec::Vec<crate::types::ReferenceNumberScheme>,
         >,
         ///States if reference number can be provided for credit transfer transactions
         #[serde(default = "defaults::response_payment_type_reference_number_supported")]
@@ -3215,303 +1668,6 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             Default::default()
         }
     }
-    ///`SchemeName`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum SchemeName {
-        #[serde(rename = "CHID")]
-        Chid,
-        #[serde(rename = "GS1G")]
-        Gs1g,
-        #[serde(rename = "DUNS")]
-        Duns,
-        #[serde(rename = "BANK")]
-        Bank,
-        #[serde(rename = "TXID")]
-        Txid,
-        #[serde(rename = "CUST")]
-        Cust,
-        #[serde(rename = "EMPL")]
-        Empl,
-        #[serde(rename = "OTHC")]
-        Othc,
-        #[serde(rename = "DRLC")]
-        Drlc,
-        #[serde(rename = "CUSI")]
-        Cusi,
-        #[serde(rename = "SOSE")]
-        Sose,
-        #[serde(rename = "ARNU")]
-        Arnu,
-        #[serde(rename = "CCPT")]
-        Ccpt,
-        #[serde(rename = "OTHI")]
-        Othi,
-        #[serde(rename = "COID")]
-        Coid,
-        #[serde(rename = "SREN")]
-        Sren,
-        #[serde(rename = "SRET")]
-        Sret,
-        #[serde(rename = "NIDN")]
-        Nidn,
-        #[serde(rename = "OAUT")]
-        Oaut,
-        #[serde(rename = "CPAN")]
-        Cpan,
-        #[serde(rename = "BBAN")]
-        Bban,
-        #[serde(rename = "IBAN")]
-        Iban,
-        #[serde(rename = "MIBN")]
-        Mibn,
-        #[serde(rename = "BGNR")]
-        Bgnr,
-        #[serde(rename = "PGNR")]
-        Pgnr,
-    }
-    impl ::std::fmt::Display for SchemeName {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Chid => f.write_str("CHID"),
-                Self::Gs1g => f.write_str("GS1G"),
-                Self::Duns => f.write_str("DUNS"),
-                Self::Bank => f.write_str("BANK"),
-                Self::Txid => f.write_str("TXID"),
-                Self::Cust => f.write_str("CUST"),
-                Self::Empl => f.write_str("EMPL"),
-                Self::Othc => f.write_str("OTHC"),
-                Self::Drlc => f.write_str("DRLC"),
-                Self::Cusi => f.write_str("CUSI"),
-                Self::Sose => f.write_str("SOSE"),
-                Self::Arnu => f.write_str("ARNU"),
-                Self::Ccpt => f.write_str("CCPT"),
-                Self::Othi => f.write_str("OTHI"),
-                Self::Coid => f.write_str("COID"),
-                Self::Sren => f.write_str("SREN"),
-                Self::Sret => f.write_str("SRET"),
-                Self::Nidn => f.write_str("NIDN"),
-                Self::Oaut => f.write_str("OAUT"),
-                Self::Cpan => f.write_str("CPAN"),
-                Self::Bban => f.write_str("BBAN"),
-                Self::Iban => f.write_str("IBAN"),
-                Self::Mibn => f.write_str("MIBN"),
-                Self::Bgnr => f.write_str("BGNR"),
-                Self::Pgnr => f.write_str("PGNR"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for SchemeName {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CHID" => Ok(Self::Chid),
-                "GS1G" => Ok(Self::Gs1g),
-                "DUNS" => Ok(Self::Duns),
-                "BANK" => Ok(Self::Bank),
-                "TXID" => Ok(Self::Txid),
-                "CUST" => Ok(Self::Cust),
-                "EMPL" => Ok(Self::Empl),
-                "OTHC" => Ok(Self::Othc),
-                "DRLC" => Ok(Self::Drlc),
-                "CUSI" => Ok(Self::Cusi),
-                "SOSE" => Ok(Self::Sose),
-                "ARNU" => Ok(Self::Arnu),
-                "CCPT" => Ok(Self::Ccpt),
-                "OTHI" => Ok(Self::Othi),
-                "COID" => Ok(Self::Coid),
-                "SREN" => Ok(Self::Sren),
-                "SRET" => Ok(Self::Sret),
-                "NIDN" => Ok(Self::Nidn),
-                "OAUT" => Ok(Self::Oaut),
-                "CPAN" => Ok(Self::Cpan),
-                "BBAN" => Ok(Self::Bban),
-                "IBAN" => Ok(Self::Iban),
-                "MIBN" => Ok(Self::Mibn),
-                "BGNR" => Ok(Self::Bgnr),
-                "PGNR" => Ok(Self::Pgnr),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for SchemeName {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for SchemeName {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`Service`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum Service {
-        #[serde(rename = "AIS")]
-        Ais,
-        #[serde(rename = "PIS")]
-        Pis,
-    }
-    impl ::std::fmt::Display for Service {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Ais => f.write_str("AIS"),
-                Self::Pis => f.write_str("PIS"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for Service {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AIS" => Ok(Self::Ais),
-                "PIS" => Ok(Self::Pis),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for Service {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for Service {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`ServiceLevelCode`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum ServiceLevelCode {
-        #[serde(rename = "BKTR")]
-        Bktr,
-        G001,
-        G002,
-        G003,
-        G004,
-        #[serde(rename = "NUGP")]
-        Nugp,
-        #[serde(rename = "NURG")]
-        Nurg,
-        #[serde(rename = "PRPT")]
-        Prpt,
-        #[serde(rename = "SDVA")]
-        Sdva,
-        #[serde(rename = "SEPA")]
-        Sepa,
-        #[serde(rename = "SVDE")]
-        Svde,
-        #[serde(rename = "URGP")]
-        Urgp,
-        #[serde(rename = "URNS")]
-        Urns,
-    }
-    impl ::std::fmt::Display for ServiceLevelCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bktr => f.write_str("BKTR"),
-                Self::G001 => f.write_str("G001"),
-                Self::G002 => f.write_str("G002"),
-                Self::G003 => f.write_str("G003"),
-                Self::G004 => f.write_str("G004"),
-                Self::Nugp => f.write_str("NUGP"),
-                Self::Nurg => f.write_str("NURG"),
-                Self::Prpt => f.write_str("PRPT"),
-                Self::Sdva => f.write_str("SDVA"),
-                Self::Sepa => f.write_str("SEPA"),
-                Self::Svde => f.write_str("SVDE"),
-                Self::Urgp => f.write_str("URGP"),
-                Self::Urns => f.write_str("URNS"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ServiceLevelCode {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "BKTR" => Ok(Self::Bktr),
-                "G001" => Ok(Self::G001),
-                "G002" => Ok(Self::G002),
-                "G003" => Ok(Self::G003),
-                "G004" => Ok(Self::G004),
-                "NUGP" => Ok(Self::Nugp),
-                "NURG" => Ok(Self::Nurg),
-                "PRPT" => Ok(Self::Prpt),
-                "SDVA" => Ok(Self::Sdva),
-                "SEPA" => Ok(Self::Sepa),
-                "SVDE" => Ok(Self::Svde),
-                "URGP" => Ok(Self::Urgp),
-                "URNS" => Ok(Self::Urns),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ServiceLevelCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ServiceLevelCode {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`SessionAccount`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionAccount {
@@ -3525,85 +1681,6 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     impl SessionAccount {
         pub fn builder() -> builder::SessionAccount {
             Default::default()
-        }
-    }
-    ///`SessionStatus`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum SessionStatus {
-        #[serde(rename = "INVALID")]
-        Invalid,
-        #[serde(rename = "PENDING_AUTHORIZATION")]
-        PendingAuthorization,
-        #[serde(rename = "RETURNED_FROM_BANK")]
-        ReturnedFromBank,
-        #[serde(rename = "AUTHORIZED")]
-        Authorized,
-        #[serde(rename = "EXPIRED")]
-        Expired,
-        #[serde(rename = "CLOSED")]
-        Closed,
-        #[serde(rename = "REVOKED")]
-        Revoked,
-        #[serde(rename = "CANCELLED")]
-        Cancelled,
-    }
-    impl ::std::fmt::Display for SessionStatus {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Invalid => f.write_str("INVALID"),
-                Self::PendingAuthorization => f.write_str("PENDING_AUTHORIZATION"),
-                Self::ReturnedFromBank => f.write_str("RETURNED_FROM_BANK"),
-                Self::Authorized => f.write_str("AUTHORIZED"),
-                Self::Expired => f.write_str("EXPIRED"),
-                Self::Closed => f.write_str("CLOSED"),
-                Self::Revoked => f.write_str("REVOKED"),
-                Self::Cancelled => f.write_str("CANCELLED"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for SessionStatus {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "INVALID" => Ok(Self::Invalid),
-                "PENDING_AUTHORIZATION" => Ok(Self::PendingAuthorization),
-                "RETURNED_FROM_BANK" => Ok(Self::ReturnedFromBank),
-                "AUTHORIZED" => Ok(Self::Authorized),
-                "EXPIRED" => Ok(Self::Expired),
-                "CLOSED" => Ok(Self::Closed),
-                "REVOKED" => Ok(Self::Revoked),
-                "CANCELLED" => Ok(Self::Cancelled),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for SessionStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for SessionStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`StartAuthorizationRequest`
@@ -3632,7 +1709,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub psu_id: ::std::option::Option<::std::string::String>,
         ///PSU type used for the authorization flow. This parameter affects how the authorization is performed at the ASPSP (e.g., whether a personal or business login page is shown). A mismatch between the provided psu_type and the PSU's actual account type can result in authorization failures or the inability to see expected accounts. Since the default value depends on the specific connector, it is highly recommended to always provide this value for consistent behavior. If the application cannot determine the PSU type, it should be requested from the end user (PSU).
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub psu_type: ::std::option::Option<PsuType>,
+        pub psu_type: ::std::option::Option<crate::types::PsuType>,
         ///URL that PSU will be redirected to after authorization
         pub redirect_url: RedirectUrl,
         ///Arbitrary string. Same string will be returned in query parameter when redirecting to the URL passed via redirect_url parameter
@@ -3678,7 +1755,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub final_status: bool,
         ///Payment ID
         pub payment_id: ::uuid::Uuid,
-        pub status: PaymentStatus,
+        pub status: crate::types::PaymentStatus,
         ///Additional information about the status reason
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status_reason_information: ::std::option::Option<StatusReasonInformation>,
@@ -3719,7 +1796,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         ///Booking date of the transaction on the account, i.e. the date at which the transaction has been recorded on books
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub booking_date: ::std::option::Option<::jiff::civil::Date>,
-        pub credit_debit_indicator: CreditDebitIndicator,
+        pub credit_debit_indicator: crate::types::CreditDebitIndicator,
         ///Identification of the party receiving funds in the transaction
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub creditor: ::std::option::Option<PartyIdentification>,
@@ -3765,13 +1842,15 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub reference_number: ::std::option::Option<::std::string::String>,
         ///Indicates what kind of reference number is used.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub reference_number_schema: ::std::option::Option<ReferenceNumberScheme>,
+        pub reference_number_schema: ::std::option::Option<
+            crate::types::ReferenceNumberScheme,
+        >,
         ///Payment details. For credit transfers may contain free text, reference number or both at the same time (in case Extended Remittance Information is supported). When it is known that remittance information contains a reference number (either based on ISO 11649 or a local scheme), the reference number is also available via the `reference_number` field.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub remittance_information: ::std::option::Option<
             ::std::vec::Vec<::std::string::String>,
         >,
-        pub status: TransactionStatus,
+        pub status: crate::types::TransactionStatus,
         pub transaction_amount: crate::Amount,
         /**Date used for specific purposes:
 - for card transaction: date of the transaction
@@ -3789,136 +1868,6 @@ For standing orders, the [executionRule] parameter helps to compute the executio
     impl Transaction {
         pub fn builder() -> builder::Transaction {
             Default::default()
-        }
-    }
-    ///`TransactionStatus`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum TransactionStatus {
-        #[serde(rename = "BOOK")]
-        Book,
-        #[serde(rename = "CNCL")]
-        Cncl,
-        #[serde(rename = "HOLD")]
-        Hold,
-        #[serde(rename = "OTHR")]
-        Othr,
-        #[serde(rename = "PDNG")]
-        Pdng,
-        #[serde(rename = "RJCT")]
-        Rjct,
-        #[serde(rename = "SCHD")]
-        Schd,
-    }
-    impl ::std::fmt::Display for TransactionStatus {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Book => f.write_str("BOOK"),
-                Self::Cncl => f.write_str("CNCL"),
-                Self::Hold => f.write_str("HOLD"),
-                Self::Othr => f.write_str("OTHR"),
-                Self::Pdng => f.write_str("PDNG"),
-                Self::Rjct => f.write_str("RJCT"),
-                Self::Schd => f.write_str("SCHD"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TransactionStatus {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "BOOK" => Ok(Self::Book),
-                "CNCL" => Ok(Self::Cncl),
-                "HOLD" => Ok(Self::Hold),
-                "OTHR" => Ok(Self::Othr),
-                "PDNG" => Ok(Self::Pdng),
-                "RJCT" => Ok(Self::Rjct),
-                "SCHD" => Ok(Self::Schd),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TransactionStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TransactionStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TransactionsFetchStrategy`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum TransactionsFetchStrategy {
-        #[serde(rename = "default")]
-        Default,
-        #[serde(rename = "longest")]
-        Longest,
-    }
-    impl ::std::fmt::Display for TransactionsFetchStrategy {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Default => f.write_str("default"),
-                Self::Longest => f.write_str("longest"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TransactionsFetchStrategy {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "default" => Ok(Self::Default),
-                "longest" => Ok(Self::Longest),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TransactionsFetchStrategy {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TransactionsFetchStrategy {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     /**Payment details. For credit transfers may contain free text, reference number or both at the same time (in case Extended Remittance Information is supported). When it is known that remittance information contains a reference number (either based on ISO 11649 or a local scheme), the reference number is also available via the `referenceNumber` field of the `Transaction` data structure.
@@ -4001,61 +1950,6 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
-        }
-    }
-    ///`Usage`
-    #[derive(
-        ::serde::Deserialize,
-        ::serde::Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd
-    )]
-    pub enum Usage {
-        #[serde(rename = "PRIV")]
-        Priv,
-        #[serde(rename = "ORGA")]
-        Orga,
-    }
-    impl ::std::fmt::Display for Usage {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Priv => f.write_str("PRIV"),
-                Self::Orga => f.write_str("ORGA"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for Usage {
-        type Err = self::error::ConversionError;
-        fn from_str(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "PRIV" => Ok(Self::Priv),
-                "ORGA" => Ok(Self::Orga),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for Usage {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &str,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for Usage {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///URL that will receive POST requests notifying about payment changes. See the [webhooks documentation](../webhooks/index.md#payment-status-webhook) for more details
@@ -4298,7 +2192,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             cash_account_type: ::std::result::Result<
-                super::CashAccountType,
+                crate::types::CashAccountType,
                 ::std::string::String,
             >,
             credit_limit: ::std::result::Result<
@@ -4346,7 +2240,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             usage: ::std::result::Result<
-                ::std::option::Option<super::Usage>,
+                ::std::option::Option<crate::types::Usage>,
                 ::std::string::String,
             >,
         }
@@ -4427,7 +2321,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn cash_account_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::CashAccountType>,
+                T: ::std::convert::TryInto<crate::types::CashAccountType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.cash_account_type = value
@@ -4579,7 +2473,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn usage<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::Usage>>,
+                T: ::std::convert::TryInto<::std::option::Option<crate::types::Usage>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.usage = value
@@ -4719,7 +2613,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             psu_types: ::std::result::Result<
-                ::std::vec::Vec<super::PsuType>,
+                ::std::vec::Vec<crate::types::PsuType>,
                 ::std::string::String,
             >,
             required_psu_headers: ::std::result::Result<
@@ -4866,7 +2760,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_types<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::PsuType>>,
+                T: ::std::convert::TryInto<::std::vec::Vec<crate::types::PsuType>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_types = value
@@ -5005,7 +2899,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct AuthMethod {
             approach: ::std::result::Result<
-                super::AuthenticationApproach,
+                crate::types::AuthenticationApproach,
                 ::std::string::String,
             >,
             credentials: ::std::result::Result<
@@ -5017,7 +2911,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
+            psu_type: ::std::result::Result<
+                crate::types::PsuType,
+                ::std::string::String,
+            >,
             title: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -5040,7 +2937,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         impl AuthMethod {
             pub fn approach<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::AuthenticationApproach>,
+                T: ::std::convert::TryInto<crate::types::AuthenticationApproach>,
                 T::Error: ::std::fmt::Display,
             {
                 self.approach = value
@@ -5090,7 +2987,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PsuType>,
+                T: ::std::convert::TryInto<crate::types::PsuType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -5188,7 +3085,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             aspsp: ::std::result::Result<super::Aspsp, ::std::string::String>,
-            psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
+            psu_type: ::std::result::Result<
+                crate::types::PsuType,
+                ::std::string::String,
+            >,
             session_id: ::std::result::Result<
                 ::std::string::String,
                 ::std::string::String,
@@ -5244,7 +3144,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PsuType>,
+                T: ::std::convert::TryInto<crate::types::PsuType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -5298,7 +3198,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub struct BalanceResource {
             balance_amount: ::std::result::Result<crate::Amount, ::std::string::String>,
             balance_type: ::std::result::Result<
-                super::BalanceStatus,
+                crate::types::BalanceStatus,
                 ::std::string::String,
             >,
             last_change_date_time: ::std::result::Result<
@@ -5346,7 +3246,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn balance_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::BalanceStatus>,
+                T: ::std::convert::TryInto<crate::types::BalanceStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.balance_type = value
@@ -5794,14 +3694,17 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             payment_type: ::std::result::Result<
-                super::PaymentType,
+                crate::types::PaymentType,
                 ::std::string::String,
             >,
             psu_id: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
+            psu_type: ::std::result::Result<
+                crate::types::PsuType,
+                ::std::string::String,
+            >,
             redirect_url: ::std::result::Result<
                 super::RedirectUrl,
                 ::std::string::String,
@@ -5917,7 +3820,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn payment_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentType>,
+                T: ::std::convert::TryInto<crate::types::PaymentType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.payment_type = value
@@ -5941,7 +3844,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PsuType>,
+                T: ::std::convert::TryInto<crate::types::PsuType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -6035,7 +3938,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<super::PaymentStatus, ::std::string::String>,
+            status: ::std::result::Result<
+                crate::types::PaymentStatus,
+                ::std::string::String,
+            >,
             url: ::std::result::Result<super::Url, ::std::string::String>,
         }
         impl ::std::default::Default for CreatePaymentResponse {
@@ -6075,7 +3981,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentStatus>,
+                T: ::std::convert::TryInto<crate::types::PaymentStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -6246,11 +4152,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             execution_rule: ::std::result::Result<
-                ::std::option::Option<super::ExecutionRule>,
+                ::std::option::Option<crate::types::ExecutionRule>,
                 ::std::string::String,
             >,
             frequency: ::std::result::Result<
-                ::std::option::Option<super::FrequencyCode>,
+                ::std::option::Option<crate::types::FrequencyCode>,
                 ::std::string::String,
             >,
             instructed_amount: ::std::result::Result<
@@ -6333,7 +4239,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn execution_rule<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::ExecutionRule>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::ExecutionRule>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.execution_rule = value
@@ -6347,7 +4255,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn frequency<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::FrequencyCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::FrequencyCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.frequency = value
@@ -6534,11 +4444,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             execution_rule: ::std::result::Result<
-                ::std::option::Option<super::ExecutionRule>,
+                ::std::option::Option<crate::types::ExecutionRule>,
                 ::std::string::String,
             >,
             frequency: ::std::result::Result<
-                ::std::option::Option<super::FrequencyCode>,
+                ::std::option::Option<crate::types::FrequencyCode>,
                 ::std::string::String,
             >,
             instructed_amount: ::std::result::Result<
@@ -6570,7 +4480,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             transaction_status: ::std::result::Result<
-                ::std::option::Option<super::PaymentStatus>,
+                ::std::option::Option<crate::types::PaymentStatus>,
                 ::std::string::String,
             >,
             ultimate_creditor: ::std::result::Result<
@@ -6631,7 +4541,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn execution_rule<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::ExecutionRule>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::ExecutionRule>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.execution_rule = value
@@ -6645,7 +4557,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn frequency<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::FrequencyCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::FrequencyCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.frequency = value
@@ -6763,7 +4677,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn transaction_status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::PaymentStatus>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::PaymentStatus>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.transaction_status = value
@@ -6864,7 +4780,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             error: ::std::result::Result<
-                ::std::option::Option<super::ErrorCode>,
+                ::std::option::Option<crate::types::ErrorCode>,
                 ::std::string::String,
             >,
             message: ::std::result::Result<::std::string::String, ::std::string::String>,
@@ -6906,7 +4822,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn error<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::ErrorCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::ErrorCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.error = value
@@ -6967,7 +4885,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             rate_type: ::std::result::Result<
-                ::std::option::Option<super::RateType>,
+                ::std::option::Option<crate::types::RateType>,
                 ::std::string::String,
             >,
             unit_currency: ::std::result::Result<
@@ -7029,7 +4947,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn rate_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::RateType>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::RateType>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.rate_type = value
@@ -7176,7 +5096,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            scheme_name: ::std::result::Result<super::SchemeName, ::std::string::String>,
+            scheme_name: ::std::result::Result<
+                crate::types::SchemeName,
+                ::std::string::String,
+            >,
         }
         impl ::std::default::Default for GenericIdentification {
             fn default() -> Self {
@@ -7218,7 +5141,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn scheme_name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::SchemeName>,
+                T: ::std::convert::TryInto<crate::types::SchemeName>,
                 T::Error: ::std::fmt::Display,
             {
                 self.scheme_name = value
@@ -7264,7 +5187,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             environment: ::std::result::Result<
-                super::Environment,
+                crate::types::Environment,
                 ::std::string::String,
             >,
             kid: ::std::result::Result<::std::string::String, ::std::string::String>,
@@ -7274,7 +5197,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             services: ::std::result::Result<
-                ::std::vec::Vec<super::Service>,
+                ::std::vec::Vec<crate::types::Service>,
                 ::std::string::String,
             >,
         }
@@ -7333,7 +5256,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn environment<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::Environment>,
+                T: ::std::convert::TryInto<crate::types::Environment>,
                 T::Error: ::std::fmt::Display,
             {
                 self.environment = value
@@ -7381,7 +5304,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn services<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::Service>>,
+                T: ::std::convert::TryInto<::std::vec::Vec<crate::types::Service>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.services = value
@@ -7476,14 +5399,17 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             >,
             payment_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             payment_type: ::std::result::Result<
-                super::PaymentType,
+                crate::types::PaymentType,
                 ::std::string::String,
             >,
             psu_id_hash: ::std::result::Result<
                 ::std::string::String,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<super::PaymentStatus, ::std::string::String>,
+            status: ::std::result::Result<
+                crate::types::PaymentStatus,
+                ::std::string::String,
+            >,
             status_reason_information: ::std::result::Result<
                 ::std::option::Option<super::StatusReasonInformation>,
                 ::std::string::String,
@@ -7558,7 +5484,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn payment_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentType>,
+                T: ::std::convert::TryInto<crate::types::PaymentType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.payment_type = value
@@ -7582,7 +5508,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentStatus>,
+                T: ::std::convert::TryInto<crate::types::PaymentStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -7732,8 +5658,14 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
                 ::std::string::String,
             >,
-            psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
-            status: ::std::result::Result<super::SessionStatus, ::std::string::String>,
+            psu_type: ::std::result::Result<
+                crate::types::PsuType,
+                ::std::string::String,
+            >,
+            status: ::std::result::Result<
+                crate::types::SessionStatus,
+                ::std::string::String,
+            >,
         }
         impl ::std::default::Default for GetSessionResponse {
             fn default() -> Self {
@@ -7852,7 +5784,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PsuType>,
+                T: ::std::convert::TryInto<crate::types::PsuType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -7864,7 +5796,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::SessionStatus>,
+                T: ::std::convert::TryInto<crate::types::SessionStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -8222,7 +6154,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct PaymentRequestResource {
             charge_bearer: ::std::result::Result<
-                ::std::option::Option<super::ChargeBearerCode>,
+                ::std::option::Option<crate::types::ChargeBearerCode>,
                 ::std::string::String,
             >,
             credit_transfer_transaction: ::std::result::Result<
@@ -8254,7 +6186,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             purpose: ::std::result::Result<
-                ::std::option::Option<super::PurposeCode>,
+                ::std::option::Option<crate::types::PurposeCode>,
                 ::std::string::String,
             >,
         }
@@ -8281,7 +6213,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn charge_bearer<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<super::ChargeBearerCode>,
+                    ::std::option::Option<crate::types::ChargeBearerCode>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -8400,7 +6332,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn purpose<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::PurposeCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::PurposeCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.purpose = value
@@ -8449,7 +6383,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct PaymentRequestResourceDetails {
             charge_bearer: ::std::result::Result<
-                ::std::option::Option<super::ChargeBearerCode>,
+                ::std::option::Option<crate::types::ChargeBearerCode>,
                 ::std::string::String,
             >,
             credit_transfer_transaction: ::std::result::Result<
@@ -8483,7 +6417,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             purpose: ::std::result::Result<
-                ::std::option::Option<super::PurposeCode>,
+                ::std::option::Option<crate::types::PurposeCode>,
                 ::std::string::String,
             >,
         }
@@ -8508,7 +6442,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn charge_bearer<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<super::ChargeBearerCode>,
+                    ::std::option::Option<crate::types::ChargeBearerCode>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -8629,7 +6563,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn purpose<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::PurposeCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::PurposeCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.purpose = value
@@ -8678,11 +6614,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         #[derive(Clone, Debug)]
         pub struct PaymentTypeInformation {
             category_purpose: ::std::result::Result<
-                ::std::option::Option<super::CategoryPurposeCode>,
+                ::std::option::Option<crate::types::CategoryPurposeCode>,
                 ::std::string::String,
             >,
             instruction_priority: ::std::result::Result<
-                ::std::option::Option<super::PriorityCode>,
+                ::std::option::Option<crate::types::PriorityCode>,
                 ::std::string::String,
             >,
             local_instrument: ::std::result::Result<
@@ -8690,7 +6626,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             service_level: ::std::result::Result<
-                ::std::option::Option<super::ServiceLevelCode>,
+                ::std::option::Option<crate::types::ServiceLevelCode>,
                 ::std::string::String,
             >,
         }
@@ -8708,7 +6644,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn category_purpose<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<super::CategoryPurposeCode>,
+                    ::std::option::Option<crate::types::CategoryPurposeCode>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -8723,7 +6659,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn instruction_priority<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::PriorityCode>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::PriorityCode>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.instruction_priority = value
@@ -8752,7 +6690,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn service_level<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<super::ServiceLevelCode>,
+                    ::std::option::Option<crate::types::ServiceLevelCode>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -8796,7 +6734,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             address_type: ::std::result::Result<
-                ::std::option::Option<super::AddressType>,
+                ::std::option::Option<crate::types::AddressType>,
                 ::std::string::String,
             >,
             building_number: ::std::result::Result<
@@ -8865,7 +6803,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn address_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::AddressType>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<crate::types::AddressType>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.address_type = value
@@ -9379,11 +7319,11 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             charge_bearer_values: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::ChargeBearerCode>>,
+                ::std::option::Option<::std::vec::Vec<crate::types::ChargeBearerCode>>,
                 ::std::string::String,
             >,
             creditor_account_schemas: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                ::std::option::Option<::std::vec::Vec<crate::types::SchemeName>>,
                 ::std::string::String,
             >,
             creditor_agent_bic_fi_required: ::std::result::Result<
@@ -9415,7 +7355,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             debtor_account_schemas: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                ::std::option::Option<::std::vec::Vec<crate::types::SchemeName>>,
                 ::std::string::String,
             >,
             debtor_contact_email_required: ::std::result::Result<
@@ -9435,7 +7375,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             final_successful_statuses: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::PaymentStatus>>,
+                ::std::option::Option<::std::vec::Vec<crate::types::PaymentStatus>>,
                 ::std::string::String,
             >,
             max_transactions: ::std::result::Result<
@@ -9443,16 +7383,21 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             payment_type: ::std::result::Result<
-                super::PaymentType,
+                crate::types::PaymentType,
                 ::std::string::String,
             >,
             priority_codes: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::PriorityCode>>,
+                ::std::option::Option<::std::vec::Vec<crate::types::PriorityCode>>,
                 ::std::string::String,
             >,
-            psu_type: ::std::result::Result<super::PsuType, ::std::string::String>,
+            psu_type: ::std::result::Result<
+                crate::types::PsuType,
+                ::std::string::String,
+            >,
             reference_number_schemas: ::std::result::Result<
-                ::std::option::Option<::std::vec::Vec<super::ReferenceNumberScheme>>,
+                ::std::option::Option<
+                    ::std::vec::Vec<crate::types::ReferenceNumberScheme>,
+                >,
                 ::std::string::String,
             >,
             reference_number_supported: ::std::result::Result<
@@ -9575,7 +7520,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn charge_bearer_values<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::ChargeBearerCode>>,
+                    ::std::option::Option<
+                        ::std::vec::Vec<crate::types::ChargeBearerCode>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9591,7 +7538,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn creditor_account_schemas<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                    ::std::option::Option<::std::vec::Vec<crate::types::SchemeName>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9708,7 +7655,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn debtor_account_schemas<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::SchemeName>>,
+                    ::std::option::Option<::std::vec::Vec<crate::types::SchemeName>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9780,7 +7727,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn final_successful_statuses<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::PaymentStatus>>,
+                    ::std::option::Option<::std::vec::Vec<crate::types::PaymentStatus>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9809,7 +7756,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn payment_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentType>,
+                T: ::std::convert::TryInto<crate::types::PaymentType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.payment_type = value
@@ -9822,7 +7769,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn priority_codes<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::PriorityCode>>,
+                    ::std::option::Option<::std::vec::Vec<crate::types::PriorityCode>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -9837,7 +7784,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PsuType>,
+                T: ::std::convert::TryInto<crate::types::PsuType>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -9850,7 +7797,9 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn reference_number_schemas<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<::std::vec::Vec<super::ReferenceNumberScheme>>,
+                    ::std::option::Option<
+                        ::std::vec::Vec<crate::types::ReferenceNumberScheme>,
+                    >,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -10329,7 +8278,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             psu_type: ::std::result::Result<
-                ::std::option::Option<super::PsuType>,
+                ::std::option::Option<crate::types::PsuType>,
                 ::std::string::String,
             >,
             redirect_url: ::std::result::Result<
@@ -10449,7 +8398,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn psu_type<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<super::PsuType>>,
+                T: ::std::convert::TryInto<::std::option::Option<crate::types::PsuType>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.psu_type = value
@@ -10682,7 +8631,10 @@ For standing orders, the [executionRule] parameter helps to compute the executio
         pub struct SubmitPaymentResponse {
             final_status: ::std::result::Result<bool, ::std::string::String>,
             payment_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
-            status: ::std::result::Result<super::PaymentStatus, ::std::string::String>,
+            status: ::std::result::Result<
+                crate::types::PaymentStatus,
+                ::std::string::String,
+            >,
             status_reason_information: ::std::result::Result<
                 ::std::option::Option<super::StatusReasonInformation>,
                 ::std::string::String,
@@ -10725,7 +8677,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PaymentStatus>,
+                T: ::std::convert::TryInto<crate::types::PaymentStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -10833,7 +8785,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             credit_debit_indicator: ::std::result::Result<
-                super::CreditDebitIndicator,
+                crate::types::CreditDebitIndicator,
                 ::std::string::String,
             >,
             creditor: ::std::result::Result<
@@ -10889,7 +8841,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             reference_number_schema: ::std::result::Result<
-                ::std::option::Option<super::ReferenceNumberScheme>,
+                ::std::option::Option<crate::types::ReferenceNumberScheme>,
                 ::std::string::String,
             >,
             remittance_information: ::std::result::Result<
@@ -10897,7 +8849,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
                 ::std::string::String,
             >,
             status: ::std::result::Result<
-                super::TransactionStatus,
+                crate::types::TransactionStatus,
                 ::std::string::String,
             >,
             transaction_amount: ::std::result::Result<
@@ -10996,7 +8948,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn credit_debit_indicator<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::CreditDebitIndicator>,
+                T: ::std::convert::TryInto<crate::types::CreditDebitIndicator>,
                 T::Error: ::std::fmt::Display,
             {
                 self.credit_debit_indicator = value
@@ -11205,7 +9157,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             pub fn reference_number_schema<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<super::ReferenceNumberScheme>,
+                    ::std::option::Option<crate::types::ReferenceNumberScheme>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -11236,7 +9188,7 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::TransactionStatus>,
+                T: ::std::convert::TryInto<crate::types::TransactionStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -11510,6 +9462,2388 @@ For standing orders, the [executionRule] parameter helps to compute the executio
             fn from(value: String) -> Self {
                 Self(value.into())
             }
+        }
+    }
+    ///`AddressType`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum AddressType {
+        ///`Business`
+        Business,
+        ///`Correspondence`
+        Correspondence,
+        ///`DeliveryTo`
+        DeliveryTo,
+        ///`MailTo`
+        MailTo,
+        ///`POBox`
+        PoBox,
+        ///`Postal`
+        Postal,
+        ///`Residential`
+        Residential,
+        ///`Statement`
+        Statement,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl AddressType {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Business => "Business",
+                Self::Correspondence => "Correspondence",
+                Self::DeliveryTo => "DeliveryTo",
+                Self::MailTo => "MailTo",
+                Self::PoBox => "POBox",
+                Self::Postal => "Postal",
+                Self::Residential => "Residential",
+                Self::Statement => "Statement",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for AddressType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for AddressType {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "Business" => Self::Business,
+                    "Correspondence" => Self::Correspondence,
+                    "DeliveryTo" => Self::DeliveryTo,
+                    "MailTo" => Self::MailTo,
+                    "POBox" => Self::PoBox,
+                    "Postal" => Self::Postal,
+                    "Residential" => Self::Residential,
+                    "Statement" => Self::Statement,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for AddressType {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for AddressType {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for AddressType {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`AuthenticationApproach`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum AuthenticationApproach {
+        ///`REDIRECT`
+        Redirect,
+        ///`DECOUPLED`
+        Decoupled,
+        ///`EMBEDDED`
+        Embedded,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl AuthenticationApproach {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Redirect => "REDIRECT",
+                Self::Decoupled => "DECOUPLED",
+                Self::Embedded => "EMBEDDED",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for AuthenticationApproach {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for AuthenticationApproach {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "REDIRECT" => Self::Redirect,
+                    "DECOUPLED" => Self::Decoupled,
+                    "EMBEDDED" => Self::Embedded,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for AuthenticationApproach {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for AuthenticationApproach {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for AuthenticationApproach {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`BalanceStatus`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum BalanceStatus {
+        ///`CLAV`
+        Clav,
+        ///`CLBD`
+        Clbd,
+        ///`FWAV`
+        Fwav,
+        ///`INFO`
+        Info,
+        ///`ITAV`
+        Itav,
+        ///`ITBD`
+        Itbd,
+        ///`OPAV`
+        Opav,
+        ///`OPBD`
+        Opbd,
+        ///`PRCD`
+        Prcd,
+        ///`OTHR`
+        Othr,
+        ///`VALU`
+        Valu,
+        ///`XPCD`
+        Xpcd,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl BalanceStatus {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Clav => "CLAV",
+                Self::Clbd => "CLBD",
+                Self::Fwav => "FWAV",
+                Self::Info => "INFO",
+                Self::Itav => "ITAV",
+                Self::Itbd => "ITBD",
+                Self::Opav => "OPAV",
+                Self::Opbd => "OPBD",
+                Self::Prcd => "PRCD",
+                Self::Othr => "OTHR",
+                Self::Valu => "VALU",
+                Self::Xpcd => "XPCD",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for BalanceStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for BalanceStatus {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "CLAV" => Self::Clav,
+                    "CLBD" => Self::Clbd,
+                    "FWAV" => Self::Fwav,
+                    "INFO" => Self::Info,
+                    "ITAV" => Self::Itav,
+                    "ITBD" => Self::Itbd,
+                    "OPAV" => Self::Opav,
+                    "OPBD" => Self::Opbd,
+                    "PRCD" => Self::Prcd,
+                    "OTHR" => Self::Othr,
+                    "VALU" => Self::Valu,
+                    "XPCD" => Self::Xpcd,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for BalanceStatus {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for BalanceStatus {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for BalanceStatus {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`CashAccountType`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum CashAccountType {
+        ///`CACC`
+        Cacc,
+        ///`CASH`
+        Cash,
+        ///`CARD`
+        Card,
+        ///`LOAN`
+        Loan,
+        ///`SVGS`
+        Svgs,
+        ///`OTHR`
+        Othr,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl CashAccountType {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Cacc => "CACC",
+                Self::Cash => "CASH",
+                Self::Card => "CARD",
+                Self::Loan => "LOAN",
+                Self::Svgs => "SVGS",
+                Self::Othr => "OTHR",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for CashAccountType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for CashAccountType {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "CACC" => Self::Cacc,
+                    "CASH" => Self::Cash,
+                    "CARD" => Self::Card,
+                    "LOAN" => Self::Loan,
+                    "SVGS" => Self::Svgs,
+                    "OTHR" => Self::Othr,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for CashAccountType {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for CashAccountType {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CashAccountType {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`CategoryPurposeCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum CategoryPurposeCode {
+        ///`BONU`
+        Bonu,
+        ///`CASH`
+        Cash,
+        ///`CBLK`
+        Cblk,
+        ///`CCRD`
+        Ccrd,
+        ///`CORT`
+        Cort,
+        ///`DCRD`
+        Dcrd,
+        ///`DIVI`
+        Divi,
+        ///`DVPM`
+        Dvpm,
+        ///`EPAY`
+        Epay,
+        ///`FCOL`
+        Fcol,
+        ///`GOVT`
+        Govt,
+        ///`HEDG`
+        Hedg,
+        ///`ICCP`
+        Iccp,
+        ///`IDCP`
+        Idcp,
+        ///`INTC`
+        Intc,
+        ///`INTE`
+        Inte,
+        ///`LOAN`
+        Loan,
+        ///`MP2B`
+        Mp2b,
+        ///`MP2P`
+        Mp2p,
+        ///`OTHR`
+        Othr,
+        ///`PENS`
+        Pens,
+        ///`RPRE`
+        Rpre,
+        ///`RRCT`
+        Rrct,
+        ///`RVPM`
+        Rvpm,
+        ///`SALA`
+        Sala,
+        ///`SECU`
+        Secu,
+        ///`SSBE`
+        Ssbe,
+        ///`SUPP`
+        Supp,
+        ///`TAXS`
+        Taxs,
+        ///`TRAD`
+        Trad,
+        ///`TREA`
+        Trea,
+        ///`VATX`
+        Vatx,
+        ///`WHLD`
+        Whld,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl CategoryPurposeCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Bonu => "BONU",
+                Self::Cash => "CASH",
+                Self::Cblk => "CBLK",
+                Self::Ccrd => "CCRD",
+                Self::Cort => "CORT",
+                Self::Dcrd => "DCRD",
+                Self::Divi => "DIVI",
+                Self::Dvpm => "DVPM",
+                Self::Epay => "EPAY",
+                Self::Fcol => "FCOL",
+                Self::Govt => "GOVT",
+                Self::Hedg => "HEDG",
+                Self::Iccp => "ICCP",
+                Self::Idcp => "IDCP",
+                Self::Intc => "INTC",
+                Self::Inte => "INTE",
+                Self::Loan => "LOAN",
+                Self::Mp2b => "MP2B",
+                Self::Mp2p => "MP2P",
+                Self::Othr => "OTHR",
+                Self::Pens => "PENS",
+                Self::Rpre => "RPRE",
+                Self::Rrct => "RRCT",
+                Self::Rvpm => "RVPM",
+                Self::Sala => "SALA",
+                Self::Secu => "SECU",
+                Self::Ssbe => "SSBE",
+                Self::Supp => "SUPP",
+                Self::Taxs => "TAXS",
+                Self::Trad => "TRAD",
+                Self::Trea => "TREA",
+                Self::Vatx => "VATX",
+                Self::Whld => "WHLD",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for CategoryPurposeCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for CategoryPurposeCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "BONU" => Self::Bonu,
+                    "CASH" => Self::Cash,
+                    "CBLK" => Self::Cblk,
+                    "CCRD" => Self::Ccrd,
+                    "CORT" => Self::Cort,
+                    "DCRD" => Self::Dcrd,
+                    "DIVI" => Self::Divi,
+                    "DVPM" => Self::Dvpm,
+                    "EPAY" => Self::Epay,
+                    "FCOL" => Self::Fcol,
+                    "GOVT" => Self::Govt,
+                    "HEDG" => Self::Hedg,
+                    "ICCP" => Self::Iccp,
+                    "IDCP" => Self::Idcp,
+                    "INTC" => Self::Intc,
+                    "INTE" => Self::Inte,
+                    "LOAN" => Self::Loan,
+                    "MP2B" => Self::Mp2b,
+                    "MP2P" => Self::Mp2p,
+                    "OTHR" => Self::Othr,
+                    "PENS" => Self::Pens,
+                    "RPRE" => Self::Rpre,
+                    "RRCT" => Self::Rrct,
+                    "RVPM" => Self::Rvpm,
+                    "SALA" => Self::Sala,
+                    "SECU" => Self::Secu,
+                    "SSBE" => Self::Ssbe,
+                    "SUPP" => Self::Supp,
+                    "TAXS" => Self::Taxs,
+                    "TRAD" => Self::Trad,
+                    "TREA" => Self::Trea,
+                    "VATX" => Self::Vatx,
+                    "WHLD" => Self::Whld,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for CategoryPurposeCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for CategoryPurposeCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CategoryPurposeCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`ChargeBearerCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum ChargeBearerCode {
+        ///`SLEV`
+        Slev,
+        ///`SHAR`
+        Shar,
+        ///`DEBT`
+        Debt,
+        ///`CRED`
+        Cred,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl ChargeBearerCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Slev => "SLEV",
+                Self::Shar => "SHAR",
+                Self::Debt => "DEBT",
+                Self::Cred => "CRED",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for ChargeBearerCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for ChargeBearerCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "SLEV" => Self::Slev,
+                    "SHAR" => Self::Shar,
+                    "DEBT" => Self::Debt,
+                    "CRED" => Self::Cred,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for ChargeBearerCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for ChargeBearerCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ChargeBearerCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`CreditDebitIndicator`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum CreditDebitIndicator {
+        ///`CRDT`
+        Crdt,
+        ///`DBIT`
+        Dbit,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl CreditDebitIndicator {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Crdt => "CRDT",
+                Self::Dbit => "DBIT",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for CreditDebitIndicator {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for CreditDebitIndicator {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "CRDT" => Self::Crdt,
+                    "DBIT" => Self::Dbit,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for CreditDebitIndicator {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for CreditDebitIndicator {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CreditDebitIndicator {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`Environment`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum Environment {
+        ///`SANDBOX`
+        Sandbox,
+        ///`PRODUCTION`
+        Production,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl Environment {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Sandbox => "SANDBOX",
+                Self::Production => "PRODUCTION",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for Environment {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for Environment {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "SANDBOX" => Self::Sandbox,
+                    "PRODUCTION" => Self::Production,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for Environment {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for Environment {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Environment {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`ErrorCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum ErrorCode {
+        ///`ACCESS_DENIED`
+        AccessDenied,
+        ///`ACCOUNT_DOES_NOT_EXIST`
+        AccountDoesNotExist,
+        ///`ALREADY_AUTHORIZED`
+        AlreadyAuthorized,
+        ///`ASPSP_ACCOUNT_NOT_ACCESSIBLE`
+        AspspAccountNotAccessible,
+        ///`ASPSP_ERROR`
+        AspspError,
+        ///`ASPSP_TIMEOUT`
+        AspspTimeout,
+        ///`ASPSP_RATE_LIMIT_EXCEEDED`
+        AspspRateLimitExceeded,
+        ///`AUTHORIZATION_NOT_PROVIDED`
+        AuthorizationNotProvided,
+        ///`CLOSED_SESSION`
+        ClosedSession,
+        ///`DATE_TO_WITHOUT_DATE_FROM`
+        DateToWithoutDateFrom,
+        ///`DATE_FROM_IN_FUTURE`
+        DateFromInFuture,
+        ///`EXPIRED_AUTHORIZATION_CODE`
+        ExpiredAuthorizationCode,
+        ///`EXPIRED_SESSION`
+        ExpiredSession,
+        ///`INVALID_ACCOUNT_ID`
+        InvalidAccountId,
+        ///`INVALID_HOST`
+        InvalidHost,
+        ///`UNAUTHORIZED_IP`
+        UnauthorizedIp,
+        ///`NO_ACCOUNTS_ADDED`
+        NoAccountsAdded,
+        ///`PAYMENT_NOT_FOUND`
+        PaymentNotFound,
+        ///`PSU_HEADER_NOT_PROVIDED`
+        PsuHeaderNotProvided,
+        ///`PSU_HEADER_INVALID`
+        PsuHeaderInvalid,
+        ///`REDIRECT_URI_NOT_ALLOWED`
+        RedirectUriNotAllowed,
+        ///`REVOKED_SESSION`
+        RevokedSession,
+        ///`SESSION_DOES_NOT_EXIST`
+        SessionDoesNotExist,
+        ///`UNAUTHORIZED_ACCESS`
+        UnauthorizedAccess,
+        ///`UNTRUSTED_PAYMENT_PARTY`
+        UntrustedPaymentParty,
+        ///`WEBHOOK_URI_NOT_ALLOWED`
+        WebhookUriNotAllowed,
+        ///`WRONG_ASPSP_PROVIDED`
+        WrongAspspProvided,
+        ///`WRONG_AUTHORIZATION_CODE`
+        WrongAuthorizationCode,
+        ///`WRONG_DATE_INTERVAL`
+        WrongDateInterval,
+        ///`WRONG_CREDENTIALS_PROVIDED`
+        WrongCredentialsProvided,
+        ///`WRONG_REQUEST_PARAMETERS`
+        WrongRequestParameters,
+        ///`WRONG_SESSION_STATUS`
+        WrongSessionStatus,
+        ///`WRONG_TRANSACTIONS_PERIOD`
+        WrongTransactionsPeriod,
+        ///`WRONG_CONTINUATION_KEY`
+        WrongContinuationKey,
+        ///`TRANSACTION_DOES_NOT_EXIST`
+        TransactionDoesNotExist,
+        ///`PAYMENT_LIMIT_EXCEEDED`
+        PaymentLimitExceeded,
+        ///`ASPSP_PAYMENT_NOT_ACCESSIBLE`
+        AspspPaymentNotAccessible,
+        ///`INVALID_PAYMENT`
+        InvalidPayment,
+        ///`ASPSP_PSU_ACTION_REQUIRED`
+        AspspPsuActionRequired,
+        ///`PAYMENT_NOT_FINALIZED`
+        PaymentNotFinalized,
+        ///`PAYMENT_SUBMISSION_NOT_SUPPORTED`
+        PaymentSubmissionNotSupported,
+        ///`PAYMENT_NOT_AUTHORIZED`
+        PaymentNotAuthorized,
+        ///`PAYMENT_SUBMISSION_NOT_DEFERRED`
+        PaymentSubmissionNotDeferred,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl ErrorCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::AccessDenied => "ACCESS_DENIED",
+                Self::AccountDoesNotExist => "ACCOUNT_DOES_NOT_EXIST",
+                Self::AlreadyAuthorized => "ALREADY_AUTHORIZED",
+                Self::AspspAccountNotAccessible => "ASPSP_ACCOUNT_NOT_ACCESSIBLE",
+                Self::AspspError => "ASPSP_ERROR",
+                Self::AspspTimeout => "ASPSP_TIMEOUT",
+                Self::AspspRateLimitExceeded => "ASPSP_RATE_LIMIT_EXCEEDED",
+                Self::AuthorizationNotProvided => "AUTHORIZATION_NOT_PROVIDED",
+                Self::ClosedSession => "CLOSED_SESSION",
+                Self::DateToWithoutDateFrom => "DATE_TO_WITHOUT_DATE_FROM",
+                Self::DateFromInFuture => "DATE_FROM_IN_FUTURE",
+                Self::ExpiredAuthorizationCode => "EXPIRED_AUTHORIZATION_CODE",
+                Self::ExpiredSession => "EXPIRED_SESSION",
+                Self::InvalidAccountId => "INVALID_ACCOUNT_ID",
+                Self::InvalidHost => "INVALID_HOST",
+                Self::UnauthorizedIp => "UNAUTHORIZED_IP",
+                Self::NoAccountsAdded => "NO_ACCOUNTS_ADDED",
+                Self::PaymentNotFound => "PAYMENT_NOT_FOUND",
+                Self::PsuHeaderNotProvided => "PSU_HEADER_NOT_PROVIDED",
+                Self::PsuHeaderInvalid => "PSU_HEADER_INVALID",
+                Self::RedirectUriNotAllowed => "REDIRECT_URI_NOT_ALLOWED",
+                Self::RevokedSession => "REVOKED_SESSION",
+                Self::SessionDoesNotExist => "SESSION_DOES_NOT_EXIST",
+                Self::UnauthorizedAccess => "UNAUTHORIZED_ACCESS",
+                Self::UntrustedPaymentParty => "UNTRUSTED_PAYMENT_PARTY",
+                Self::WebhookUriNotAllowed => "WEBHOOK_URI_NOT_ALLOWED",
+                Self::WrongAspspProvided => "WRONG_ASPSP_PROVIDED",
+                Self::WrongAuthorizationCode => "WRONG_AUTHORIZATION_CODE",
+                Self::WrongDateInterval => "WRONG_DATE_INTERVAL",
+                Self::WrongCredentialsProvided => "WRONG_CREDENTIALS_PROVIDED",
+                Self::WrongRequestParameters => "WRONG_REQUEST_PARAMETERS",
+                Self::WrongSessionStatus => "WRONG_SESSION_STATUS",
+                Self::WrongTransactionsPeriod => "WRONG_TRANSACTIONS_PERIOD",
+                Self::WrongContinuationKey => "WRONG_CONTINUATION_KEY",
+                Self::TransactionDoesNotExist => "TRANSACTION_DOES_NOT_EXIST",
+                Self::PaymentLimitExceeded => "PAYMENT_LIMIT_EXCEEDED",
+                Self::AspspPaymentNotAccessible => "ASPSP_PAYMENT_NOT_ACCESSIBLE",
+                Self::InvalidPayment => "INVALID_PAYMENT",
+                Self::AspspPsuActionRequired => "ASPSP_PSU_ACTION_REQUIRED",
+                Self::PaymentNotFinalized => "PAYMENT_NOT_FINALIZED",
+                Self::PaymentSubmissionNotSupported => "PAYMENT_SUBMISSION_NOT_SUPPORTED",
+                Self::PaymentNotAuthorized => "PAYMENT_NOT_AUTHORIZED",
+                Self::PaymentSubmissionNotDeferred => "PAYMENT_SUBMISSION_NOT_DEFERRED",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for ErrorCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for ErrorCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "ACCESS_DENIED" => Self::AccessDenied,
+                    "ACCOUNT_DOES_NOT_EXIST" => Self::AccountDoesNotExist,
+                    "ALREADY_AUTHORIZED" => Self::AlreadyAuthorized,
+                    "ASPSP_ACCOUNT_NOT_ACCESSIBLE" => Self::AspspAccountNotAccessible,
+                    "ASPSP_ERROR" => Self::AspspError,
+                    "ASPSP_TIMEOUT" => Self::AspspTimeout,
+                    "ASPSP_RATE_LIMIT_EXCEEDED" => Self::AspspRateLimitExceeded,
+                    "AUTHORIZATION_NOT_PROVIDED" => Self::AuthorizationNotProvided,
+                    "CLOSED_SESSION" => Self::ClosedSession,
+                    "DATE_TO_WITHOUT_DATE_FROM" => Self::DateToWithoutDateFrom,
+                    "DATE_FROM_IN_FUTURE" => Self::DateFromInFuture,
+                    "EXPIRED_AUTHORIZATION_CODE" => Self::ExpiredAuthorizationCode,
+                    "EXPIRED_SESSION" => Self::ExpiredSession,
+                    "INVALID_ACCOUNT_ID" => Self::InvalidAccountId,
+                    "INVALID_HOST" => Self::InvalidHost,
+                    "UNAUTHORIZED_IP" => Self::UnauthorizedIp,
+                    "NO_ACCOUNTS_ADDED" => Self::NoAccountsAdded,
+                    "PAYMENT_NOT_FOUND" => Self::PaymentNotFound,
+                    "PSU_HEADER_NOT_PROVIDED" => Self::PsuHeaderNotProvided,
+                    "PSU_HEADER_INVALID" => Self::PsuHeaderInvalid,
+                    "REDIRECT_URI_NOT_ALLOWED" => Self::RedirectUriNotAllowed,
+                    "REVOKED_SESSION" => Self::RevokedSession,
+                    "SESSION_DOES_NOT_EXIST" => Self::SessionDoesNotExist,
+                    "UNAUTHORIZED_ACCESS" => Self::UnauthorizedAccess,
+                    "UNTRUSTED_PAYMENT_PARTY" => Self::UntrustedPaymentParty,
+                    "WEBHOOK_URI_NOT_ALLOWED" => Self::WebhookUriNotAllowed,
+                    "WRONG_ASPSP_PROVIDED" => Self::WrongAspspProvided,
+                    "WRONG_AUTHORIZATION_CODE" => Self::WrongAuthorizationCode,
+                    "WRONG_DATE_INTERVAL" => Self::WrongDateInterval,
+                    "WRONG_CREDENTIALS_PROVIDED" => Self::WrongCredentialsProvided,
+                    "WRONG_REQUEST_PARAMETERS" => Self::WrongRequestParameters,
+                    "WRONG_SESSION_STATUS" => Self::WrongSessionStatus,
+                    "WRONG_TRANSACTIONS_PERIOD" => Self::WrongTransactionsPeriod,
+                    "WRONG_CONTINUATION_KEY" => Self::WrongContinuationKey,
+                    "TRANSACTION_DOES_NOT_EXIST" => Self::TransactionDoesNotExist,
+                    "PAYMENT_LIMIT_EXCEEDED" => Self::PaymentLimitExceeded,
+                    "ASPSP_PAYMENT_NOT_ACCESSIBLE" => Self::AspspPaymentNotAccessible,
+                    "INVALID_PAYMENT" => Self::InvalidPayment,
+                    "ASPSP_PSU_ACTION_REQUIRED" => Self::AspspPsuActionRequired,
+                    "PAYMENT_NOT_FINALIZED" => Self::PaymentNotFinalized,
+                    "PAYMENT_SUBMISSION_NOT_SUPPORTED" => {
+                        Self::PaymentSubmissionNotSupported
+                    }
+                    "PAYMENT_NOT_AUTHORIZED" => Self::PaymentNotAuthorized,
+                    "PAYMENT_SUBMISSION_NOT_DEFERRED" => {
+                        Self::PaymentSubmissionNotDeferred
+                    }
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for ErrorCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for ErrorCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ErrorCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`ExecutionRule`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum ExecutionRule {
+        ///`FWNG`
+        Fwng,
+        ///`PREC`
+        Prec,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl ExecutionRule {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Fwng => "FWNG",
+                Self::Prec => "PREC",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for ExecutionRule {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for ExecutionRule {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "FWNG" => Self::Fwng,
+                    "PREC" => Self::Prec,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for ExecutionRule {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for ExecutionRule {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ExecutionRule {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`FrequencyCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum FrequencyCode {
+        ///`DAIL`
+        Dail,
+        ///`WEEK`
+        Week,
+        ///`TOWK`
+        Towk,
+        ///`MNTH`
+        Mnth,
+        ///`TOMN`
+        Tomn,
+        ///`QUTR`
+        Qutr,
+        ///`SEMI`
+        Semi,
+        ///`YEAR`
+        Year,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl FrequencyCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Dail => "DAIL",
+                Self::Week => "WEEK",
+                Self::Towk => "TOWK",
+                Self::Mnth => "MNTH",
+                Self::Tomn => "TOMN",
+                Self::Qutr => "QUTR",
+                Self::Semi => "SEMI",
+                Self::Year => "YEAR",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for FrequencyCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for FrequencyCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "DAIL" => Self::Dail,
+                    "WEEK" => Self::Week,
+                    "TOWK" => Self::Towk,
+                    "MNTH" => Self::Mnth,
+                    "TOMN" => Self::Tomn,
+                    "QUTR" => Self::Qutr,
+                    "SEMI" => Self::Semi,
+                    "YEAR" => Self::Year,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for FrequencyCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for FrequencyCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for FrequencyCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`PSUType`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum PsuType {
+        ///`business`
+        Business,
+        ///`personal`
+        Personal,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl PsuType {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Business => "business",
+                Self::Personal => "personal",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for PsuType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for PsuType {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "business" => Self::Business,
+                    "personal" => Self::Personal,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for PsuType {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for PsuType {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PsuType {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`PaymentStatus`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum PaymentStatus {
+        ///`ACCC`
+        Accc,
+        ///`ACCP`
+        Accp,
+        ///`ACSC`
+        Acsc,
+        ///`ACSP`
+        Acsp,
+        ///`ACTC`
+        Actc,
+        ///`ACWC`
+        Acwc,
+        ///`ACWP`
+        Acwp,
+        ///`PART`
+        Part,
+        ///`RCVD`
+        Rcvd,
+        ///`PDNG`
+        Pdng,
+        ///`RJCT`
+        Rjct,
+        ///`ACPT`
+        Acpt,
+        ///`ACCR`
+        Accr,
+        ///`RJCR`
+        Rjcr,
+        ///`PACR`
+        Pacr,
+        ///`PDCR`
+        Pdcr,
+        ///`CNCL`
+        Cncl,
+        ///`NULL`
+        Null,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl PaymentStatus {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Accc => "ACCC",
+                Self::Accp => "ACCP",
+                Self::Acsc => "ACSC",
+                Self::Acsp => "ACSP",
+                Self::Actc => "ACTC",
+                Self::Acwc => "ACWC",
+                Self::Acwp => "ACWP",
+                Self::Part => "PART",
+                Self::Rcvd => "RCVD",
+                Self::Pdng => "PDNG",
+                Self::Rjct => "RJCT",
+                Self::Acpt => "ACPT",
+                Self::Accr => "ACCR",
+                Self::Rjcr => "RJCR",
+                Self::Pacr => "PACR",
+                Self::Pdcr => "PDCR",
+                Self::Cncl => "CNCL",
+                Self::Null => "NULL",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for PaymentStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for PaymentStatus {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "ACCC" => Self::Accc,
+                    "ACCP" => Self::Accp,
+                    "ACSC" => Self::Acsc,
+                    "ACSP" => Self::Acsp,
+                    "ACTC" => Self::Actc,
+                    "ACWC" => Self::Acwc,
+                    "ACWP" => Self::Acwp,
+                    "PART" => Self::Part,
+                    "RCVD" => Self::Rcvd,
+                    "PDNG" => Self::Pdng,
+                    "RJCT" => Self::Rjct,
+                    "ACPT" => Self::Acpt,
+                    "ACCR" => Self::Accr,
+                    "RJCR" => Self::Rjcr,
+                    "PACR" => Self::Pacr,
+                    "PDCR" => Self::Pdcr,
+                    "CNCL" => Self::Cncl,
+                    "NULL" => Self::Null,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for PaymentStatus {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for PaymentStatus {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PaymentStatus {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`PaymentType`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum PaymentType {
+        ///`SEPA`
+        Sepa,
+        ///`INST_SEPA`
+        InstSepa,
+        ///`DOMESTIC`
+        Domestic,
+        ///`CROSSBORDER`
+        Crossborder,
+        ///`DOMESTIC_PL_ELIXIR`
+        DomesticPlElixir,
+        ///`DOMESTIC_PL_EXPRESS_ELIXIR`
+        DomesticPlExpressElixir,
+        ///`DOMESTIC_PL_SORBNET`
+        DomesticPlSorbnet,
+        ///`DOMESTIC_PL_BLUE_CASH`
+        DomesticPlBlueCash,
+        ///`DOMESTIC_SE_GIRO`
+        DomesticSeGiro,
+        ///`INTERNAL`
+        Internal,
+        ///`BULK_SEPA`
+        BulkSepa,
+        ///`BULK_DOMESTIC`
+        BulkDomestic,
+        ///`BULK_DOMESTIC_SE_GIRO`
+        BulkDomesticSeGiro,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl PaymentType {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Sepa => "SEPA",
+                Self::InstSepa => "INST_SEPA",
+                Self::Domestic => "DOMESTIC",
+                Self::Crossborder => "CROSSBORDER",
+                Self::DomesticPlElixir => "DOMESTIC_PL_ELIXIR",
+                Self::DomesticPlExpressElixir => "DOMESTIC_PL_EXPRESS_ELIXIR",
+                Self::DomesticPlSorbnet => "DOMESTIC_PL_SORBNET",
+                Self::DomesticPlBlueCash => "DOMESTIC_PL_BLUE_CASH",
+                Self::DomesticSeGiro => "DOMESTIC_SE_GIRO",
+                Self::Internal => "INTERNAL",
+                Self::BulkSepa => "BULK_SEPA",
+                Self::BulkDomestic => "BULK_DOMESTIC",
+                Self::BulkDomesticSeGiro => "BULK_DOMESTIC_SE_GIRO",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for PaymentType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for PaymentType {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "SEPA" => Self::Sepa,
+                    "INST_SEPA" => Self::InstSepa,
+                    "DOMESTIC" => Self::Domestic,
+                    "CROSSBORDER" => Self::Crossborder,
+                    "DOMESTIC_PL_ELIXIR" => Self::DomesticPlElixir,
+                    "DOMESTIC_PL_EXPRESS_ELIXIR" => Self::DomesticPlExpressElixir,
+                    "DOMESTIC_PL_SORBNET" => Self::DomesticPlSorbnet,
+                    "DOMESTIC_PL_BLUE_CASH" => Self::DomesticPlBlueCash,
+                    "DOMESTIC_SE_GIRO" => Self::DomesticSeGiro,
+                    "INTERNAL" => Self::Internal,
+                    "BULK_SEPA" => Self::BulkSepa,
+                    "BULK_DOMESTIC" => Self::BulkDomestic,
+                    "BULK_DOMESTIC_SE_GIRO" => Self::BulkDomesticSeGiro,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for PaymentType {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for PaymentType {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PaymentType {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`PriorityCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum PriorityCode {
+        ///`HIGH`
+        High,
+        ///`NORM`
+        Norm,
+        ///`EXPR`
+        Expr,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl PriorityCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::High => "HIGH",
+                Self::Norm => "NORM",
+                Self::Expr => "EXPR",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for PriorityCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for PriorityCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "HIGH" => Self::High,
+                    "NORM" => Self::Norm,
+                    "EXPR" => Self::Expr,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for PriorityCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for PriorityCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PriorityCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`PurposeCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum PurposeCode {
+        ///`ACCT`
+        Acct,
+        ///`CASH`
+        Cash,
+        ///`COMC`
+        Comc,
+        ///`CPKC`
+        Cpkc,
+        ///`TRPT`
+        Trpt,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl PurposeCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Acct => "ACCT",
+                Self::Cash => "CASH",
+                Self::Comc => "COMC",
+                Self::Cpkc => "CPKC",
+                Self::Trpt => "TRPT",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for PurposeCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for PurposeCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "ACCT" => Self::Acct,
+                    "CASH" => Self::Cash,
+                    "COMC" => Self::Comc,
+                    "CPKC" => Self::Cpkc,
+                    "TRPT" => Self::Trpt,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for PurposeCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for PurposeCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PurposeCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`RateType`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum RateType {
+        ///`SPOT`
+        Spot,
+        ///`SALE`
+        Sale,
+        ///`AGRD`
+        Agrd,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl RateType {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Spot => "SPOT",
+                Self::Sale => "SALE",
+                Self::Agrd => "AGRD",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for RateType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for RateType {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "SPOT" => Self::Spot,
+                    "SALE" => Self::Sale,
+                    "AGRD" => Self::Agrd,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for RateType {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for RateType {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for RateType {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`ReferenceNumberScheme`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum ReferenceNumberScheme {
+        ///`SEBG`
+        Sebg,
+        ///`NORF`
+        Norf,
+        ///`FIRF`
+        Firf,
+        ///`INTL`
+        Intl,
+        ///`BERF`
+        Berf,
+        ///`SDDM`
+        Sddm,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl ReferenceNumberScheme {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Sebg => "SEBG",
+                Self::Norf => "NORF",
+                Self::Firf => "FIRF",
+                Self::Intl => "INTL",
+                Self::Berf => "BERF",
+                Self::Sddm => "SDDM",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for ReferenceNumberScheme {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for ReferenceNumberScheme {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "SEBG" => Self::Sebg,
+                    "NORF" => Self::Norf,
+                    "FIRF" => Self::Firf,
+                    "INTL" => Self::Intl,
+                    "BERF" => Self::Berf,
+                    "SDDM" => Self::Sddm,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for ReferenceNumberScheme {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for ReferenceNumberScheme {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ReferenceNumberScheme {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`SchemeName`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum SchemeName {
+        ///`CHID`
+        Chid,
+        ///`GS1G`
+        Gs1g,
+        ///`DUNS`
+        Duns,
+        ///`BANK`
+        Bank,
+        ///`TXID`
+        Txid,
+        ///`CUST`
+        Cust,
+        ///`EMPL`
+        Empl,
+        ///`OTHC`
+        Othc,
+        ///`DRLC`
+        Drlc,
+        ///`CUSI`
+        Cusi,
+        ///`SOSE`
+        Sose,
+        ///`ARNU`
+        Arnu,
+        ///`CCPT`
+        Ccpt,
+        ///`OTHI`
+        Othi,
+        ///`COID`
+        Coid,
+        ///`SREN`
+        Sren,
+        ///`SRET`
+        Sret,
+        ///`NIDN`
+        Nidn,
+        ///`OAUT`
+        Oaut,
+        ///`CPAN`
+        Cpan,
+        ///`BBAN`
+        Bban,
+        ///`IBAN`
+        Iban,
+        ///`MIBN`
+        Mibn,
+        ///`BGNR`
+        Bgnr,
+        ///`PGNR`
+        Pgnr,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl SchemeName {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Chid => "CHID",
+                Self::Gs1g => "GS1G",
+                Self::Duns => "DUNS",
+                Self::Bank => "BANK",
+                Self::Txid => "TXID",
+                Self::Cust => "CUST",
+                Self::Empl => "EMPL",
+                Self::Othc => "OTHC",
+                Self::Drlc => "DRLC",
+                Self::Cusi => "CUSI",
+                Self::Sose => "SOSE",
+                Self::Arnu => "ARNU",
+                Self::Ccpt => "CCPT",
+                Self::Othi => "OTHI",
+                Self::Coid => "COID",
+                Self::Sren => "SREN",
+                Self::Sret => "SRET",
+                Self::Nidn => "NIDN",
+                Self::Oaut => "OAUT",
+                Self::Cpan => "CPAN",
+                Self::Bban => "BBAN",
+                Self::Iban => "IBAN",
+                Self::Mibn => "MIBN",
+                Self::Bgnr => "BGNR",
+                Self::Pgnr => "PGNR",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for SchemeName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for SchemeName {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "CHID" => Self::Chid,
+                    "GS1G" => Self::Gs1g,
+                    "DUNS" => Self::Duns,
+                    "BANK" => Self::Bank,
+                    "TXID" => Self::Txid,
+                    "CUST" => Self::Cust,
+                    "EMPL" => Self::Empl,
+                    "OTHC" => Self::Othc,
+                    "DRLC" => Self::Drlc,
+                    "CUSI" => Self::Cusi,
+                    "SOSE" => Self::Sose,
+                    "ARNU" => Self::Arnu,
+                    "CCPT" => Self::Ccpt,
+                    "OTHI" => Self::Othi,
+                    "COID" => Self::Coid,
+                    "SREN" => Self::Sren,
+                    "SRET" => Self::Sret,
+                    "NIDN" => Self::Nidn,
+                    "OAUT" => Self::Oaut,
+                    "CPAN" => Self::Cpan,
+                    "BBAN" => Self::Bban,
+                    "IBAN" => Self::Iban,
+                    "MIBN" => Self::Mibn,
+                    "BGNR" => Self::Bgnr,
+                    "PGNR" => Self::Pgnr,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for SchemeName {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for SchemeName {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for SchemeName {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`Service`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum Service {
+        ///`AIS`
+        Ais,
+        ///`PIS`
+        Pis,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl Service {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Ais => "AIS",
+                Self::Pis => "PIS",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for Service {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for Service {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "AIS" => Self::Ais,
+                    "PIS" => Self::Pis,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for Service {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for Service {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Service {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`ServiceLevelCode`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum ServiceLevelCode {
+        ///`BKTR`
+        Bktr,
+        ///`G001`
+        G001,
+        ///`G002`
+        G002,
+        ///`G003`
+        G003,
+        ///`G004`
+        G004,
+        ///`NUGP`
+        Nugp,
+        ///`NURG`
+        Nurg,
+        ///`PRPT`
+        Prpt,
+        ///`SDVA`
+        Sdva,
+        ///`SEPA`
+        Sepa,
+        ///`SVDE`
+        Svde,
+        ///`URGP`
+        Urgp,
+        ///`URNS`
+        Urns,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl ServiceLevelCode {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Bktr => "BKTR",
+                Self::G001 => "G001",
+                Self::G002 => "G002",
+                Self::G003 => "G003",
+                Self::G004 => "G004",
+                Self::Nugp => "NUGP",
+                Self::Nurg => "NURG",
+                Self::Prpt => "PRPT",
+                Self::Sdva => "SDVA",
+                Self::Sepa => "SEPA",
+                Self::Svde => "SVDE",
+                Self::Urgp => "URGP",
+                Self::Urns => "URNS",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for ServiceLevelCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for ServiceLevelCode {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "BKTR" => Self::Bktr,
+                    "G001" => Self::G001,
+                    "G002" => Self::G002,
+                    "G003" => Self::G003,
+                    "G004" => Self::G004,
+                    "NUGP" => Self::Nugp,
+                    "NURG" => Self::Nurg,
+                    "PRPT" => Self::Prpt,
+                    "SDVA" => Self::Sdva,
+                    "SEPA" => Self::Sepa,
+                    "SVDE" => Self::Svde,
+                    "URGP" => Self::Urgp,
+                    "URNS" => Self::Urns,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for ServiceLevelCode {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for ServiceLevelCode {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ServiceLevelCode {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`SessionStatus`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum SessionStatus {
+        ///`INVALID`
+        Invalid,
+        ///`PENDING_AUTHORIZATION`
+        PendingAuthorization,
+        ///`RETURNED_FROM_BANK`
+        ReturnedFromBank,
+        ///`AUTHORIZED`
+        Authorized,
+        ///`EXPIRED`
+        Expired,
+        ///`CLOSED`
+        Closed,
+        ///`REVOKED`
+        Revoked,
+        ///`CANCELLED`
+        Cancelled,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl SessionStatus {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Invalid => "INVALID",
+                Self::PendingAuthorization => "PENDING_AUTHORIZATION",
+                Self::ReturnedFromBank => "RETURNED_FROM_BANK",
+                Self::Authorized => "AUTHORIZED",
+                Self::Expired => "EXPIRED",
+                Self::Closed => "CLOSED",
+                Self::Revoked => "REVOKED",
+                Self::Cancelled => "CANCELLED",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for SessionStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for SessionStatus {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "INVALID" => Self::Invalid,
+                    "PENDING_AUTHORIZATION" => Self::PendingAuthorization,
+                    "RETURNED_FROM_BANK" => Self::ReturnedFromBank,
+                    "AUTHORIZED" => Self::Authorized,
+                    "EXPIRED" => Self::Expired,
+                    "CLOSED" => Self::Closed,
+                    "REVOKED" => Self::Revoked,
+                    "CANCELLED" => Self::Cancelled,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for SessionStatus {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for SessionStatus {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for SessionStatus {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`TransactionStatus`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum TransactionStatus {
+        ///`BOOK`
+        Book,
+        ///`CNCL`
+        Cncl,
+        ///`HOLD`
+        Hold,
+        ///`OTHR`
+        Othr,
+        ///`PDNG`
+        Pdng,
+        ///`RJCT`
+        Rjct,
+        ///`SCHD`
+        Schd,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl TransactionStatus {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Book => "BOOK",
+                Self::Cncl => "CNCL",
+                Self::Hold => "HOLD",
+                Self::Othr => "OTHR",
+                Self::Pdng => "PDNG",
+                Self::Rjct => "RJCT",
+                Self::Schd => "SCHD",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for TransactionStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for TransactionStatus {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "BOOK" => Self::Book,
+                    "CNCL" => Self::Cncl,
+                    "HOLD" => Self::Hold,
+                    "OTHR" => Self::Othr,
+                    "PDNG" => Self::Pdng,
+                    "RJCT" => Self::Rjct,
+                    "SCHD" => Self::Schd,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for TransactionStatus {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for TransactionStatus {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TransactionStatus {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`TransactionsFetchStrategy`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum TransactionsFetchStrategy {
+        ///`default`
+        Default,
+        ///`longest`
+        Longest,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl TransactionsFetchStrategy {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Default => "default",
+                Self::Longest => "longest",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for TransactionsFetchStrategy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for TransactionsFetchStrategy {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "default" => Self::Default,
+                    "longest" => Self::Longest,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for TransactionsFetchStrategy {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for TransactionsFetchStrategy {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TransactionsFetchStrategy {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
+        }
+    }
+    ///`Usage`
+    ///
+    /// Values the description does not list arrive as [`Self::Unknown`].
+    #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+    #[non_exhaustive]
+    pub enum Usage {
+        ///`PRIV`
+        Priv,
+        ///`ORGA`
+        Orga,
+        /// A value this version of the description does not list, kept as sent.
+        Unknown(::std::string::String),
+    }
+    impl Usage {
+        /// The value as the API spells it.
+        pub fn as_str(&self) -> &str {
+            match self {
+                Self::Priv => "PRIV",
+                Self::Orga => "ORGA",
+                Self::Unknown(value) => value,
+            }
+        }
+    }
+    impl ::std::fmt::Display for Usage {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(self.as_str())
+        }
+    }
+    impl ::std::str::FromStr for Usage {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(
+                match value {
+                    "PRIV" => Self::Priv,
+                    "ORGA" => Self::Orga,
+                    other => Self::Unknown(other.to_owned()),
+                },
+            )
+        }
+    }
+    impl ::std::convert::From<&str> for Usage {
+        fn from(value: &str) -> Self {
+            match value.parse() {
+                Ok(parsed) => parsed,
+                Err(never) => match never {}
+            }
+        }
+    }
+    impl ::serde::Serialize for Usage {
+        fn serialize<S: ::serde::Serializer>(
+            &self,
+            serializer: S,
+        ) -> ::std::result::Result<S::Ok, S::Error> {
+            serializer.serialize_str(self.as_str())
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Usage {
+        fn deserialize<D: ::serde::Deserializer<'de>>(
+            deserializer: D,
+        ) -> ::std::result::Result<Self, D::Error> {
+            let value = <::std::string::String as ::serde::Deserialize>::deserialize(
+                deserializer,
+            )?;
+            Ok(Self::from(value.as_str()))
         }
     }
 }
@@ -12522,8 +12856,8 @@ pub mod builder {
         continuation_key: Result<Option<::std::string::String>, String>,
         date_from: Result<Option<::jiff::civil::Date>, String>,
         date_to: Result<Option<::jiff::civil::Date>, String>,
-        strategy: Result<Option<types::TransactionsFetchStrategy>, String>,
-        transaction_status: Result<Option<types::TransactionStatus>, String>,
+        strategy: Result<Option<crate::types::TransactionsFetchStrategy>, String>,
+        transaction_status: Result<Option<crate::types::TransactionStatus>, String>,
         psu_accept: Result<Option<::std::string::String>, String>,
         psu_accept_charset: Result<Option<::std::string::String>, String>,
         psu_accept_encoding: Result<Option<::std::string::String>, String>,
@@ -12605,26 +12939,26 @@ pub mod builder {
         }
         pub fn strategy<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::TransactionsFetchStrategy>,
+            V: std::convert::TryInto<crate::types::TransactionsFetchStrategy>,
         {
             self.strategy = value
                 .try_into()
                 .map(Some)
                 .map_err(|_| {
-                    "conversion to `TransactionsFetchStrategy` for strategy failed"
+                    "conversion to `crate :: types :: TransactionsFetchStrategy` for strategy failed"
                         .to_string()
                 });
             self
         }
         pub fn transaction_status<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::TransactionStatus>,
+            V: std::convert::TryInto<crate::types::TransactionStatus>,
         {
             self.transaction_status = value
                 .try_into()
                 .map(Some)
                 .map_err(|_| {
-                    "conversion to `TransactionStatus` for transaction_status failed"
+                    "conversion to `crate :: types :: TransactionStatus` for transaction_status failed"
                         .to_string()
                 });
             self
@@ -13318,9 +13652,9 @@ pub mod builder {
     pub struct GetAspsps<'a> {
         client: &'a super::Client,
         country: Result<Option<types::Country>, String>,
-        payment_type: Result<Option<types::PaymentType>, String>,
-        psu_type: Result<Option<types::PsuType>, String>,
-        service: Result<Option<types::Service>, String>,
+        payment_type: Result<Option<crate::types::PaymentType>, String>,
+        psu_type: Result<Option<crate::types::PsuType>, String>,
+        service: Result<Option<crate::types::Service>, String>,
     }
     impl<'a> GetAspsps<'a> {
         pub fn new(client: &'a super::Client) -> Self {
@@ -13344,34 +13678,41 @@ pub mod builder {
         }
         pub fn payment_type<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::PaymentType>,
+            V: std::convert::TryInto<crate::types::PaymentType>,
         {
             self.payment_type = value
                 .try_into()
                 .map(Some)
                 .map_err(|_| {
-                    "conversion to `PaymentType` for payment_type failed".to_string()
+                    "conversion to `crate :: types :: PaymentType` for payment_type failed"
+                        .to_string()
                 });
             self
         }
         pub fn psu_type<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::PsuType>,
+            V: std::convert::TryInto<crate::types::PsuType>,
         {
             self.psu_type = value
                 .try_into()
                 .map(Some)
-                .map_err(|_| "conversion to `PsuType` for psu_type failed".to_string());
+                .map_err(|_| {
+                    "conversion to `crate :: types :: PsuType` for psu_type failed"
+                        .to_string()
+                });
             self
         }
         pub fn service<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::Service>,
+            V: std::convert::TryInto<crate::types::Service>,
         {
             self.service = value
                 .try_into()
                 .map(Some)
-                .map_err(|_| "conversion to `Service` for service failed".to_string());
+                .map_err(|_| {
+                    "conversion to `crate :: types :: Service` for service failed"
+                        .to_string()
+                });
             self
         }
         ///Sends a `GET` request to `/aspsps`

@@ -10,7 +10,7 @@ use rust_decimal::Decimal;
 use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
-use wiremock::matchers::{method, path, query_param, query_param_is_missing};
+use wiremock::matchers::{header, method, path, query_param, query_param_is_missing};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 const APP: &str = "cf589be3-3755-465b-a8df-a90a16a31403";
@@ -121,13 +121,14 @@ fn transaction(reference: &str, amount: &str, indicator: &str) -> serde_json::Va
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn all_transactions_follows_continuation_keys() {
+async fn every_page_carries_the_configured_query_and_psu_headers() {
     let server = MockServer::start().await;
     let transactions = format!("/accounts/{ACCOUNT}/transactions");
     Mock::given(method("GET"))
         .and(path(transactions.as_str()))
         .and(query_param("date_from", "2026-10-01"))
         .and(query_param("date_to", "2026-10-31"))
+        .and(header("psu-ip-address", "203.0.113.7"))
         .and(query_param_is_missing("continuation_key"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "transactions": [transaction("t1", "7123.45", "CRDT")],
@@ -140,6 +141,7 @@ async fn all_transactions_follows_continuation_keys() {
         .and(path(transactions.as_str()))
         .and(query_param("date_from", "2026-10-01"))
         .and(query_param("date_to", "2026-10-31"))
+        .and(header("psu-ip-address", "203.0.113.7"))
         .and(query_param("continuation_key", "page-2"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "transactions": [transaction("t2", "12.50", "DBIT")],
@@ -150,7 +152,12 @@ async fn all_transactions_follows_continuation_keys() {
         .await;
 
     let found = client(&server)
-        .all_transactions(ACCOUNT, Some(date(2026, 10, 1)), Some(date(2026, 10, 31)))
+        .all_transactions(ACCOUNT, |request| {
+            request
+                .date_from(date(2026, 10, 1))
+                .date_to(date(2026, 10, 31))
+                .psu_ip_address("203.0.113.7")
+        })
         .await
         .unwrap();
 
@@ -159,7 +166,7 @@ async fn all_transactions_follows_continuation_keys() {
         .map(|transaction| {
             (
                 transaction.entry_reference.as_deref().unwrap(),
-                transaction.credit_debit_indicator,
+                transaction.credit_debit_indicator.clone(),
                 transaction.transaction_amount.clone(),
                 transaction.booking_date,
             )
@@ -205,7 +212,7 @@ async fn an_empty_continuation_key_ends_the_listing() {
         .await;
 
     let found = client(&server)
-        .all_transactions(ACCOUNT, None, None)
+        .all_transactions(ACCOUNT, |request| request)
         .await
         .unwrap();
     assert_eq!(found.len(), 1);
@@ -225,7 +232,7 @@ async fn documented_errors_come_back_typed() {
         .await;
 
     let error = client(&server)
-        .all_transactions(ACCOUNT, None, None)
+        .all_transactions(ACCOUNT, |request| request)
         .await
         .unwrap_err();
 

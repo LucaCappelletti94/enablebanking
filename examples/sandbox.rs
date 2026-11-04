@@ -141,7 +141,7 @@ async fn accounts(client: &Client, failures: &mut Vec<String>, consent: &Consent
             .account_id(account)
             .send()
             .await?;
-        let transactions = client.all_transactions(account, None, None).await?;
+        let transactions = client.all_transactions(account, |request| request).await?;
         println!("account {account}: {} transactions", transactions.len());
         match client
             .get_transaction()

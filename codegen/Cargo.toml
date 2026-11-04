@@ -7,8 +7,10 @@ publish = false
 description = "Generates src/generated.rs from the vendored Enable Banking OpenAPI description"
 
 [dependencies]
+heck = "0.5.0"
 openapiv3 = "2.2.0"
 prettyplease = "0.2.37"
+proc-macro2 = "1.0.107"
 progenitor-impl = "0.15.1"
 quote = "1.0.47"
 schemars = "0.8.22"
