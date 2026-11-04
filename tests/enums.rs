@@ -1,5 +1,7 @@
 //! Enumerations keep values the description does not list, so a new code from a bank does not make a whole response unreadable.
 
+#![expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
+
 use enablebanking::types::{Transaction, TransactionStatus};
 use serde_json::json;
 

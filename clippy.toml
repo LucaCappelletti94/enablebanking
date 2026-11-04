@@ -1,3 +1,1 @@
 doc-valid-idents = ["OpenAPI", ".."]
-allow-expect-in-tests = true
-allow-unwrap-in-tests = true

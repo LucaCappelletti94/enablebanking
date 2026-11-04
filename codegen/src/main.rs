@@ -65,16 +65,28 @@ const HTTP_METHODS: &[&str] = &[
     "get", "put", "post", "delete", "options", "head", "patch", "trace",
 ];
 
+/// What one run of the generator does.
+#[derive(Clone, Copy)]
+enum Mode {
+    /// Writes the client.
+    Write,
+    /// Fails when the checked-in client differs from a fresh one.
+    Check,
+    /// Prints the version of the vendored description.
+    SpecVersion,
+}
+
 fn main() -> ExitCode {
-    let check = match std::env::args().skip(1).collect::<Vec<_>>().as_slice() {
-        [] => false,
-        [flag] if flag == "--check" => true,
+    let mode = match std::env::args().skip(1).collect::<Vec<_>>().as_slice() {
+        [] => Mode::Write,
+        [flag] if flag == "--check" => Mode::Check,
+        [flag] if flag == "--spec-version" => Mode::SpecVersion,
         _ => {
-            eprintln!("usage: codegen [--check]");
+            eprintln!("usage: codegen [--check | --spec-version]");
             return ExitCode::from(2);
         }
     };
-    match run(Path::new("."), check) {
+    match run(Path::new("."), mode) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             eprintln!("codegen: {error}");
@@ -83,38 +95,50 @@ fn main() -> ExitCode {
     }
 }
 
-/// Generates the client under `root`, or with `check` only compares it with the checked-in one.
-fn run(root: &Path, check: bool) -> Result<(), String> {
+/// Runs the generator in `mode` on the workspace at `root`.
+fn run(root: &Path, mode: Mode) -> Result<(), String> {
     let spec_path = root.join("spec/enablebanking-api.yaml");
     let output_path = root.join("src/generated.rs");
     let text = std::fs::read_to_string(&spec_path)
         .map_err(|error| format!("reading {}: {error}", spec_path.display()))?;
-    let generated = generate(&text)?;
-    if check {
-        let current = std::fs::read_to_string(&output_path).unwrap_or_default();
-        if current != generated {
-            return Err(format!(
-                "{} is stale, run `cargo run -p codegen`",
-                output_path.display()
-            ));
+    match mode {
+        Mode::SpecVersion => {
+            println!("{}", spec_version(&text)?);
+            Ok(())
         }
-        return Ok(());
+        Mode::Check => {
+            let current = std::fs::read_to_string(&output_path).unwrap_or_default();
+            if current == generate(&text)? {
+                Ok(())
+            } else {
+                Err(format!(
+                    "{} is stale, run `cargo run -p codegen`",
+                    output_path.display()
+                ))
+            }
+        }
+        Mode::Write => std::fs::write(&output_path, generate(&text)?)
+            .map_err(|error| format!("writing {}: {error}", output_path.display())),
     }
-    std::fs::write(&output_path, generated)
-        .map_err(|error| format!("writing {}: {error}", output_path.display()))
+}
+
+/// The `info.version` of the description in `yaml`.
+fn spec_version(yaml: &str) -> Result<String, String> {
+    let spec: Value =
+        serde_norway::from_str(yaml).map_err(|error| format!("parsing the spec: {error}"))?;
+    spec.pointer("/info/version")
+        .and_then(Value::as_str)
+        .map(str::to_owned)
+        .ok_or_else(|| "the spec has no info.version".to_owned())
 }
 
 /// The Rust source of the client for the OpenAPI 3.1 description in `yaml`.
 fn generate(yaml: &str) -> Result<String, String> {
+    let version = spec_version(yaml)?;
     let mut spec: Value =
         serde_norway::from_str(yaml).map_err(|error| format!("parsing the spec: {error}"))?;
     lower(&mut spec)?;
     name_operations(&mut spec)?;
-    let version = spec
-        .pointer("/info/version")
-        .and_then(Value::as_str)
-        .ok_or("the spec has no info.version")?
-        .to_owned();
     let enums = string_enums(&spec)?;
     let openapi: openapiv3::OpenAPI = serde_json::from_value(spec)
         .map_err(|error| format!("reading the lowered spec: {error}"))?;
@@ -465,6 +489,7 @@ fn name_operations(spec: &mut Value) -> Result<(), String> {
 }
 
 #[cfg(test)]
+#[expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
 mod tests {
     use serde_json::json;
 

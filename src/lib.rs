@@ -100,7 +100,7 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns the first [`Error`] of any page.
+    /// Returns the first [`Error`] of any page, or [`Error::Custom`] when the bank sends the same continuation key twice in a row.
     #[expect(
         clippy::result_large_err,
         reason = "the same error type every generated method returns"
@@ -114,14 +114,20 @@ impl Client {
         let mut continuation_key: Option<String> = None;
         loop {
             let mut request = configure(self.get_account_transactions().account_id(account_id));
-            if let Some(key) = continuation_key.take() {
-                request = request.continuation_key(key);
+            if let Some(key) = &continuation_key {
+                request = request.continuation_key(key.as_str());
             }
             let page = request.send().await?.into_inner();
             transactions.extend(page.transactions);
             match page.continuation_key {
-                Some(key) if !key.is_empty() => continuation_key = Some(key),
-                _ => return Ok(transactions),
+                Some(key) if key.is_empty() => return Ok(transactions),
+                Some(key) if continuation_key.as_ref() == Some(&key) => {
+                    return Err(Error::Custom(format!(
+                        "the bank repeated continuation key {key:?}, so the listing would never end"
+                    )));
+                }
+                Some(key) => continuation_key = Some(key),
+                None => return Ok(transactions),
             }
         }
     }

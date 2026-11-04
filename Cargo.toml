@@ -11,7 +11,7 @@ documentation = "https://docs.rs/enablebanking"
 authors = ["Luca Cappelletti <cappelletti.luca94@gmail.com>"]
 keywords = ["open-banking", "psd2", "enable-banking", "banking", "api"]
 categories = ["finance", "api-bindings"]
-include = ["/src", "/tests", "/README.md", "/LICENSE"]
+include = ["/src", "/spec", "/tests", "/README.md", "/LICENSE"]
 
 [dependencies]
 jiff = { version = "0.2.39", features = ["serde"] }

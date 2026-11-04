@@ -430,7 +430,9 @@ mod recorder {
             let listener = TcpListener::bind("127.0.0.1:0").await?;
             let url = format!("http://{}", listener.local_addr()?);
             let log = Log::default();
-            let http = reqwest::Client::new();
+            let http = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(120))
+                .build()?;
             let upstream = upstream.to_owned();
             let shared = Arc::clone(&log);
             tokio::spawn(async move {

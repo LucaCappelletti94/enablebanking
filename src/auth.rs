@@ -125,6 +125,7 @@ impl std::fmt::Debug for Signer {
 }
 
 #[cfg(test)]
+#[expect(clippy::unwrap_used, reason = "a test panics on any unexpected value")]
 mod tests {
     use jiff::{SignedDuration, Timestamp};
 

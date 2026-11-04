@@ -219,6 +219,29 @@ async fn an_empty_continuation_key_ends_the_listing() {
 }
 
 #[tokio::test(flavor = "current_thread")]
+async fn a_repeated_continuation_key_ends_the_listing_with_an_error() {
+    let server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path(format!("/accounts/{ACCOUNT}/transactions")))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "transactions": [transaction("t1", "1.00", "CRDT")],
+            "continuation_key": "same",
+        })))
+        .expect(2)
+        .mount(&server)
+        .await;
+
+    let error = client(&server)
+        .all_transactions(ACCOUNT, |request| request)
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(&error, Error::Custom(message) if message.contains("same")),
+        "{error:?}"
+    );
+}
+
+#[tokio::test(flavor = "current_thread")]
 async fn documented_errors_come_back_typed() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))

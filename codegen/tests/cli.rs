@@ -74,6 +74,18 @@ fn check_accepts_a_fresh_client_and_rejects_a_stale_one() {
 }
 
 #[test]
+fn the_spec_version_is_printed_from_the_vendored_description() {
+    let dir = copy(None);
+    let output = codegen(dir.path(), &["--spec-version"]);
+    assert!(output.status.success(), "{output:?}");
+    let version = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        checked_in().contains(&format!("API version {}.", version.trim())),
+        "{version}"
+    );
+}
+
+#[test]
 fn unknown_arguments_are_refused() {
     let dir = copy(Some(&checked_in()));
     let output = codegen(dir.path(), &["--chek"]);
