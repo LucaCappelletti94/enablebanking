@@ -14,7 +14,7 @@ quote = "1.0.47"
 schemars = "0.8.22"
 serde_json = "1.0.154"
 serde_norway = "0.9.42"
-syn = "2.0.119"
+syn = "3.0.9"
 
 [dev-dependencies]
 tempfile = "3.27.0"
