@@ -8,7 +8,7 @@ description = "Generates src/generated.rs from the vendored Enable Banking OpenA
 
 [dependencies]
 openapiv3 = "2.2.0"
-prettyplease = "0.2.37"
+prettyplease = "0.3.0"
 progenitor-impl = "0.15.1"
 quote = "1.0.47"
 schemars = "0.8.22"
