@@ -1,6 +1,6 @@
 //! Calls every endpoint against Enable Banking's sandbox, approving consents for the Nordea FI sandbox in a headless Chrome, and checks each GET response strictly against `spec/enablebanking-api.yaml`.
 //!
-//! Environment: `ENABLEBANKING_SANDBOX_APP` (application id), `ENABLEBANKING_SANDBOX_KEY` (its private key in PEM) and optionally `CHROME` (default `google-chrome`).
+//! Environment: `ENABLEBANKING_SANDBOX_APP` (application id), `ENABLEBANKING_SANDBOX_KEY` (its private key in PEM) and optionally `CHROME`, the browser to drive instead of the one found on the system.
 //!
 //! No sandbox bank returns transaction ids, so `get_transaction` is checked for its documented error only.
 
@@ -57,8 +57,8 @@ async fn run() -> Result<Vec<String>> {
     )?;
     let client = Client::new(API_URL, signer.clone());
     let mut check = Checker::new(signer);
-    let chrome = std::env::var("CHROME").unwrap_or_else(|_| "google-chrome".to_owned());
-    let consent = Consent::start(&chrome).await?;
+    let chrome = std::env::var("CHROME").ok();
+    let consent = Consent::start(chrome.as_deref()).await?;
 
     let application = client.get_application().send().await?;
     if application.environment != Environment::Sandbox {
@@ -297,14 +297,17 @@ struct Consent {
 }
 
 impl Consent {
-    async fn start(chrome: &str) -> Result<Self> {
+    /// Starts the Chrome at `chrome`, or the one chromiumoxide finds when `None`.
+    async fn start(chrome: Option<&str>) -> Result<Self> {
         let profile =
             std::env::temp_dir().join(format!("enablebanking-sandbox-{}", std::process::id()));
-        let config = BrowserConfig::builder()
-            .chrome_executable(chrome)
+        let mut config = BrowserConfig::builder()
             .user_data_dir(profile)
-            .request_timeout(Duration::from_secs(60))
-            .build()?;
+            .request_timeout(Duration::from_secs(60));
+        if let Some(chrome) = chrome {
+            config = config.chrome_executable(chrome);
+        }
+        let config = config.build()?;
         let (browser, mut events) = Browser::launch(config).await?;
         tokio::spawn(async move { while events.next().await.is_some() {} });
         Ok(Self { browser })
