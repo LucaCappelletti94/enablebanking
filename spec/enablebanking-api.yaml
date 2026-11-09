@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: API reference
-  version: 1.0.0-967df6a1
+  version: 1.0.0-b9335b5b
 paths:
   /auth:
     post:
@@ -3741,6 +3741,18 @@ components:
           title: Debtor Currency Required
           description: 'States if debtor currency is required. Create payment body
             field: `payment_request.debtor_currency`'
+          default: false
+          type: boolean
+        debtor_name_required:
+          title: Debtor Name Required
+          description: 'States if debtor name is required. Create payment body field:
+            `payment_request.debtor.name`'
+          default: false
+          type: boolean
+        debtor_country_required:
+          title: Debtor Country Required
+          description: 'States if debtor country is required. Create payment body
+            field: `payment_request.debtor.postal_address.country`'
           default: false
           type: boolean
         debtor_contact_email_required:
