@@ -1,23 +1,9 @@
 version: 2
 updates:
-  - package-ecosystem: cargo
-    directory: /
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 7
-    ignore:
-      # The generator hands progenitor's own schemars and syn types around, so these follow progenitor's releases.
-      - dependency-name: schemars
-        update-types: ["version-update:semver-major"]
-      - dependency-name: syn
-        update-types: ["version-update:semver-major"]
-      - dependency-name: prettyplease
-        update-types: ["version-update:semver-minor", "version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     cooldown:
       default-days: 7
     groups:
