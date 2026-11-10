@@ -69,4 +69,4 @@ async fn transactions(client: &Client, code: &str) -> Result<(), Box<dyn std::er
 
 Every endpoint is a method named after the API, with optional parameters as builder calls. Amounts are `rust_decimal::Decimal`, dates are `jiff` types, and enumerations keep codes the description does not list as `Unknown`. `Client::new` gives up on a request after 15 seconds, so slower banks need a `reqwest::Client` of your own through `Client::new_with_client`.
 
-A weekly job regenerates the client when Enable Banking updates the description, and another calls every endpoint against their sandbox. Optional fields are nullable, because the API sends `null` for them. Until 1.0, a release that follows a changed description is a new minor version.
+Weekly jobs regenerate the client from Enable Banking's description and check sandbox responses, accepting `null` for optional fields. Until 1.0, a release that follows a changed description is a new minor version. The release workflow publishes `v*` tags to crates.io and GitHub using Trusted Publishing (`release.yml`, environment `crates-io`), and accepts existing tags through manual dispatch.
