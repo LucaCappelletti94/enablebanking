@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: API reference
-  version: 1.0.0-b9335b5b
+  version: 1.0.0-d18bda50
 paths:
   /auth:
     post:
@@ -1704,6 +1704,29 @@ components:
           title: Transactions
           description: Request consent with transactions access
           default: true
+        transactions_extended_history:
+          type: boolean
+          title: Transactions Extended History
+          description: 'Controls whether an additional consent or SCA may be requested
+            from the user to
+
+            access transaction history older than 90 days, where the ASPSP requires
+            it. If
+
+            `true` (default, also when not provided), the user goes through the extra
+            consent
+
+            or SCA where needed. If `false`, no extra consent or SCA is requested:
+            the full
+
+            history is still returned where the ASPSP provides it without extra SCA,
+            while
+
+            otherwise it can be limited to 90 days. The parameter only limits the
+            number of
+
+            SCAs and does not limit the history to 90 days.'
+          default: true
         valid_until:
           type: string
           format: date-time
@@ -2001,7 +2024,10 @@ components:
           $ref: '#/components/schemas/Access'
           description: Scope of access requested from ASPSP and confirmed by PSU
           examples:
-          - valid_until: '2021-01-01T00:00:00Z'
+          - balances: true
+            transactions: true
+            transactions_extended_history: true
+            valid_until: '2021-01-01T00:00:00Z'
       type: object
       required:
       - session_id
