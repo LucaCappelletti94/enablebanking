@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: API reference
-  version: 1.0.0-d18bda50
+  version: 1.0.0-1c03cf81
 paths:
   /auth:
     post:
